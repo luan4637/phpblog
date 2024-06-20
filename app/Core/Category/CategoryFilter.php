@@ -67,4 +67,12 @@ class CategoryFilter extends RequestFilter implements RequestFilterInterface
 
         return $conditions;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTableRelated(): string
+    {
+        return '';
+    }
 }

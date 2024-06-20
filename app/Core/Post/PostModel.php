@@ -1,12 +1,12 @@
 <?php
-namespace App\Core\Category;
+namespace App\Core\Post;
 
-use App\Core\Post\PostModel;
+use App\Core\Category\CategoryModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CategoryModel extends Model
+class PostModel extends Model
 {
     use SoftDeletes;
 
@@ -14,36 +14,36 @@ class CategoryModel extends Model
     const UPDATED_AT = 'updatedAt';
     const DELETED_AT = 'deletedAt';
 
-    protected $table = 'category';
+    protected $table = 'post';
 
     protected $fillable = [
-        'name', 'slug', 'description', 'image', 'showInNav'
+        'title', 'slug', 'content', 'userId', 'published', 'position', 'picture'
     ];
 
-    public function posts()
+    public function categories()
     {
         return $this->belongsToMany(
-            PostModel::class, 
+            CategoryModel::class, 
             'post_category',
-            'categoryId',
-            'postId'
+            'postId',
+            'categoryId'
         );
     }
 
     /** 
      * @param string $value
      */
-    public function setName(string $value)
+    public function setTitle(string $value)
     {
-        $this->name = $value;
+        $this->title = $value;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getTitle()
     {
-        return $this->name;
+        return $this->title;
     }
 
     /** 
@@ -62,4 +62,19 @@ class CategoryModel extends Model
         return $this->slug;
     }
 
+    /** 
+     * @param int $value
+     */
+    public function setUserId(int $value)
+    {
+        $this->userId = $value;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
 }

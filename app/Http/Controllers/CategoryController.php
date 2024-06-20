@@ -2,7 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Core\Category\CategoryFilter;
+use App\Core\Category\CategoryModel;
 use App\Core\Category\CategoryRepositoryInterface;
+use App\Http\Requests\Category\CategorySaveRequest;
+use App\Http\Requests\Category\CategoryDeleteRequest;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
 use Illuminate\Http\Request;
 
@@ -31,5 +34,63 @@ class CategoryController extends Controller
         $paginationResult = $this->categoryRepository->paginate($this->categoryFilter);
 
         return response()->json($paginationResult);
+    }
+
+    public function save(CategorySaveRequest $request)
+    {
+        /** @var int $id */
+        $id = $request->getId();
+        /** @var CategoryModel $category */
+        $category = new CategoryModel();
+        if ($id) {
+            $category = $this->categoryRepository->find($id);
+            if (!$category) {
+                return response()->json([
+                    'status' => 'fail',
+                    'message' => 'Item does not found'
+                ]);
+            }
+        }
+        $category->fill($request->validated());
+        $category->setSlug(str_replace(' ', '-', $category->getName()));
+
+        if ($category->save()) {
+            return response()->json([
+                'status' => 'success',
+                'category' => $category
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'fail',
+            'message' => 'Something went wrong'
+        ]);
+    }
+
+    public function delete(CategoryDeleteRequest $request)
+    {
+        /** @var int $id */
+        $id = $request->getId();
+
+        /** @var CategoryModel|null $category */
+        $category = $this->categoryRepository->find($id);
+        if (!$category) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Item does not found'
+            ]);
+        }
+
+        if ($category->delete()) {
+            return response()->json([
+                'status' => 'success',
+                'category' => $category
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'fail',
+            'message' => 'Something went wrong'
+        ]);
     }
 }

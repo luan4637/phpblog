@@ -15,6 +15,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\Category\CategoryRepositoryInterface::class,
             \App\Core\Category\CategoryRepository::class
         );
+
+        $this->app->singleton(
+            \App\Core\Post\PostRepositoryInterface::class,
+            \App\Core\Post\PostRepository::class
+        );
     }
 
     /**

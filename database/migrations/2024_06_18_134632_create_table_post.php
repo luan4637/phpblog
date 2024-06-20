@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('picture')->nullable();
             $table->timestamp('createdAt');
             $table->timestamp('updatedAt');
+            $table->softDeletes('deletedAt');
         });
     }
 

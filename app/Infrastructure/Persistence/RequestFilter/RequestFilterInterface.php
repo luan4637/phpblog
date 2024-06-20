@@ -18,6 +18,11 @@ interface RequestFilterInterface
     /**
      * @return string
      */
+    public function getTableRelated(): string;
+
+    /**
+     * @return string
+     */
     public function getSort(): string;
 
     /**

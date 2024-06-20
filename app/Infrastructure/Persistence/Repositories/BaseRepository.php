@@ -44,6 +44,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
     {
         /** @var \Illuminate\Database\Eloquent\Collection */
         $results = $this->model;
+        if ($filter->getTableRelated()) {
+            $results = $results->with($filter->getTableRelated());
+        }
         foreach ($filter->getConditions() as $condition) {
             $results = $results->where(
                 $condition['column'],

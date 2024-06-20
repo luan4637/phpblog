@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('showInNav')->default(false);
             $table->timestamp('createdAt');
             $table->timestamp('updatedAt');
+            $table->softDeletes('deletedAt');
         });
     }
 
