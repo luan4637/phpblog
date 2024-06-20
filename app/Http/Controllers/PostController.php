@@ -56,6 +56,8 @@ class PostController extends Controller
         $post->setUserId(1);
 
         if ($post->save()) {
+            $post->categories()->attach($request->getCategories());
+            
             return response()->json([
                 'status' => 'success',
                 'post' => $post
