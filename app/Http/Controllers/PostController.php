@@ -36,6 +36,18 @@ class PostController extends Controller
         return response()->json($paginationResult);
     }
 
+    public function get(Request $request, int $id)
+    {
+        $post = $this->postRepository->find($id);
+        if (!$post) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Item does not found'
+            ]);
+        }
+        return response()->json($post);
+    }
+
     public function save(PostSaveRequest $request)
     {
         /** @var int $id */

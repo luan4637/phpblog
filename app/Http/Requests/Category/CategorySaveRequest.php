@@ -13,7 +13,7 @@ class CategorySaveRequest extends FormRequest
     {
         return [
             'name' => 'required|max:255',
-            'description' => 'string',
+            'description' => 'nullable|string',
             'showInNav' => 'boolean'
         ];
     }

@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug');
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->integer('userId')->default(null);
             $table->boolean('published')->default(true);
-            $table->string('position', 16)->default('');
+            $table->string('position', 16)->nullable()->default('');
             $table->string('picture')->nullable();
             $table->timestamp('createdAt');
             $table->timestamp('updatedAt');

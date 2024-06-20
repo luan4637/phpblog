@@ -13,10 +13,10 @@ class PostSaveRequest extends FormRequest
     {
         return [
             'title' => 'required|max:255',
-            'content' => 'string',
+            'content' => 'nullable|string',
             'published' => 'boolean',
-            'position' => 'string|max:16',
-            'picture' => 'string|max:255'
+            'position' => 'nullable|string|max:16',
+            'picture' => 'nullable|string|max:255'
         ];
     }
 

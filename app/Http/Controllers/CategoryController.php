@@ -36,6 +36,20 @@ class CategoryController extends Controller
         return response()->json($paginationResult);
     }
 
+    public function get(Request $request, int $id)
+    {
+        $category = $this->categoryRepository->find($id);
+
+        if (!$category) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Item does not found'
+            ]);
+        }
+
+        return response()->json($category);
+    }
+
     public function save(CategorySaveRequest $request)
     {
         /** @var int $id */
