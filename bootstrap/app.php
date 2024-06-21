@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [ '*' ]);
 
         $middleware->append(\App\Http\Middleware\Cors::class);
+
+        $middleware->redirectGuestsTo('/unauthenticated');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
