@@ -7,10 +7,10 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PostController;
 
 Route::get('/', [UserController::class, 'index']);
-Route::post('/login', [LoginController::class, 'authenticate']);
-Route::get('/unauthenticated', [LoginController::class, 'unauthenticate']);
+Route::get('/login', [LoginController::class, 'login']);
+Route::post('/login', [LoginController::class, 'login']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     // category
     Route::get('/category', [CategoryController::class, 'index']);
     Route::get('/category/{id}', [CategoryController::class, 'get']);
