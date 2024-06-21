@@ -77,4 +77,20 @@ class PostModel extends Model
     {
         return $this->userId;
     }
+
+    /** 
+     * @param string $value
+     */
+    public function setPicture(string $value)
+    {
+        $this->picture = $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPicture()
+    {
+        return $this->picture;
+    }
 }

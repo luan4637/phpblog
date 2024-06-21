@@ -67,6 +67,13 @@ class PostController extends Controller
         $post->setSlug(str_replace(' ', '-', $post->getTitle()));
         $post->setUserId(1);
 
+        $picture = $request->file('picture');
+        if ($picture) {
+            $pictureName = md5(date('Y-m-d H:i:s') . $picture->getClientOriginalName()) . '.' . $picture->extension();
+            $picture->move('upload', $pictureName);
+            $post->setPicture('/upload/' . $pictureName);
+        }
+
         if ($post->save()) {
             $post->categories()->attach($request->getCategories());
             

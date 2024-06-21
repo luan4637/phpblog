@@ -15,8 +15,8 @@ class PostSaveRequest extends FormRequest
             'title' => 'required|max:255',
             'content' => 'nullable|string',
             'published' => 'boolean',
-            'position' => 'nullable|string|max:16',
-            'picture' => 'nullable|string|max:255'
+            'position' => 'string|max:16',
+            'picture' => 'nullable|image'
         ];
     }
 
@@ -27,6 +27,7 @@ class PostSaveRequest extends FormRequest
     {
         $this->merge([
             'published' => $this->toBoolean($this->published),
+            'position' => $this->position === null ? '' : $this->position
         ]);
     }
 
@@ -54,6 +55,10 @@ class PostSaveRequest extends FormRequest
     {
         $categories = $this->input('categories');
         $categories = json_decode($categories, true);
+
+        if (!$categories) {
+            return [];
+        }
 
         return array_column($categories, 'id');
     }
