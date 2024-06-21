@@ -1,10 +1,10 @@
 <?php
-namespace App\Core\Category;
+namespace App\Core\User;
 
 use App\Infrastructure\Persistence\RequestFilter\RequestFilter;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
 
-class CategoryFilter extends RequestFilter implements RequestFilterInterface
+class UserFilter extends RequestFilter implements RequestFilterInterface
 {
     /**
      * @return string
@@ -19,23 +19,9 @@ class CategoryFilter extends RequestFilter implements RequestFilterInterface
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getEmail(): string
     {
-        $value = $this->request->string('description')->trim();
-
-        return $value;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function getShowInNav()
-    {
-        if ($this->request->string('showInNav')->isEmpty()) {
-            return null;
-        }
-
-        $value = $this->request->boolean('showInNav');
+        $value = $this->request->string('email')->trim();
 
         return $value;
     }
@@ -45,7 +31,7 @@ class CategoryFilter extends RequestFilter implements RequestFilterInterface
      */
     public function getSortFields(): array
     {
-        return [ 'id', 'name', 'showInNav' ];
+        return [ 'id', 'name', 'email' ];
     }
 
     /**
@@ -58,11 +44,8 @@ class CategoryFilter extends RequestFilter implements RequestFilterInterface
         if ($this->getName() !== '') {
             $conditions[] = [ 'column' => 'name', 'condition' => 'like', 'value' => '%' . $this->getName() . '%' ];
         }
-        if ($this->getDescription() !== '') {
-            $conditions[] = [ 'column' => 'description', 'condition' => 'like', 'value' => '%' . $this->getDescription() . '%' ];
-        }
-        if ($this->getShowInNav() !== null) {
-            $conditions[] = [ 'column' => 'showInNav', 'condition' => '=', 'value' => $this->getShowInNav() ];
+        if ($this->getEmail() !== '') {
+            $conditions[] = [ 'column' => 'email', 'condition' => 'like', 'value' => '%' . $this->getEmail() . '%' ];
         }
 
         return $conditions;

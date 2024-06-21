@@ -71,8 +71,8 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
     /**
      * @inheritdoc
      */
-    public function getTableRelated(): string
+    public function getTableRelated(): array
     {
-        return 'categories';
+        return [ 'categories', 'user' ];
     }
 }

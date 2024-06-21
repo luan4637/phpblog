@@ -8,6 +8,7 @@ use App\Http\Requests\Post\PostSaveRequest;
 use App\Http\Requests\Post\PostDeleteRequest;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -62,10 +63,11 @@ class PostController extends Controller
                     'message' => 'Item does not found'
                 ]);
             }
+        } else {
+            $post->setUserId(Auth::id());
         }
         $post->fill($request->validated());
         $post->setSlug(str_replace(' ', '-', $post->getTitle()));
-        $post->setUserId(1);
 
         $picture = $request->file('picture');
         if ($picture) {

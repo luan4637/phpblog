@@ -16,9 +16,9 @@ interface RequestFilterInterface
     public function getConditions(): array;
 
     /**
-     * @return string
+     * @return array
      */
-    public function getTableRelated(): string;
+    public function getTableRelated(): array;
 
     /**
      * @return string

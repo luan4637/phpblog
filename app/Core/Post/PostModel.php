@@ -2,6 +2,7 @@
 namespace App\Core\Post;
 
 use App\Core\Category\CategoryModel;
+use App\Core\User\UserModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -28,6 +29,11 @@ class PostModel extends Model
             'postId',
             'categoryId'
         );
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(UserModel::class, 'userId');
     }
 
     /** 

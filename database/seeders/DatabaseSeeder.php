@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Core\User\UserModel;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
         $password = Hash::make('admin');
 
-        User::factory()->create([
+        UserModel::factory()->create([
             'name' => 'Admin',
             'email' => 'luan4637@gmail.com',
             'password' => $password,
