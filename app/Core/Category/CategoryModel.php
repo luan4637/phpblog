@@ -2,13 +2,14 @@
 namespace App\Core\Category;
 
 use App\Core\Post\PostModel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CategoryModel extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';

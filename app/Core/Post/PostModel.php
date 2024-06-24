@@ -3,13 +3,14 @@ namespace App\Core\Post;
 
 use App\Core\Category\CategoryModel;
 use App\Core\User\UserModel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PostModel extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';

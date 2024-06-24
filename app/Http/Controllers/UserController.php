@@ -31,7 +31,7 @@ class UserController extends Controller
         /** @var \App\Infrastructure\Persistence\Pagination\PaginationResultInterface */
         $paginationResult = $this->userRepository->paginate($this->userFilter);
 
-        return response()->json($paginationResult);
+        return $this->responseSuccess($paginationResult);
     }
 
     public function get(Request $request, int $id)
@@ -39,13 +39,10 @@ class UserController extends Controller
         $user = $this->userRepository->find($id);
 
         if (!$user) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Item does not found'
-            ]);
+            return $this->responseFail('Item does not found');
         }
 
-        return response()->json($user);
+        return $this->responseSuccess($user);
     }
 
     public function save(UserSaveRequest $request)
@@ -57,24 +54,15 @@ class UserController extends Controller
         if ($id) {
             $user = $this->userRepository->find($id);
             if (!$user) {
-                return response()->json([
-                    'status' => 'fail',
-                    'message' => 'Item does not found'
-                ]);
+                return $this->responseFail('Item does not found');
             }
         }
         $user->fill($request->validated());
 
         if ($user->save()) {
-            return response()->json([
-                'status' => 'success',
-                'user' => $user
-            ]);
+            return $this->responseSuccess($user);
         }
 
-        return response()->json([
-            'status' => 'fail',
-            'message' => 'Something went wrong'
-        ]);
+        return $this->responseFail('Something went wrong');
     }
 }

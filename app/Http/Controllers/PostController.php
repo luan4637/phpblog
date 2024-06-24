@@ -34,19 +34,16 @@ class PostController extends Controller
         /** @var \App\Infrastructure\Persistence\Pagination\PaginationResultInterface */
         $paginationResult = $this->postRepository->paginate($this->postFilter);
 
-        return response()->json($paginationResult);
+        return $this->responseSuccess($paginationResult);
     }
 
     public function get(Request $request, int $id)
     {
         $post = $this->postRepository->find($id);
         if (!$post) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Item does not found'
-            ]);
+            return $this->responseFail('Item does not found');
         }
-        return response()->json($post);
+        return $this->responseSuccess($post);
     }
 
     public function save(PostSaveRequest $request)
@@ -58,10 +55,7 @@ class PostController extends Controller
         if ($id) {
             $post = $this->postRepository->find($id);
             if (!$post) {
-                return response()->json([
-                    'status' => 'fail',
-                    'message' => 'Item does not found'
-                ]);
+                return $this->responseFail('Item does not found');
             }
         } else {
             $post->setUserId(Auth::id());
@@ -79,16 +73,10 @@ class PostController extends Controller
         if ($post->save()) {
             $post->categories()->attach($request->getCategories());
             
-            return response()->json([
-                'status' => 'success',
-                'post' => $post
-            ]);
+            return $this->responseSuccess($post);
         }
 
-        return response()->json([
-            'status' => 'fail',
-            'message' => 'Something went wrong'
-        ]);
+        return $this->responseFail('Something went wrong');
     }
 
     public function delete(PostDeleteRequest $request)
@@ -99,22 +87,13 @@ class PostController extends Controller
         /** @var PostModel|null $post */
         $post = $this->postRepository->find($id);
         if (!$post) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Item does not found'
-            ]);
+            return $this->responseFail('Item does not found');
         }
 
         if ($post->delete()) {
-            return response()->json([
-                'status' => 'success',
-                'post' => $post
-            ]);
+            return $this->responseSuccess($post);
         }
 
-        return response()->json([
-            'status' => 'fail',
-            'message' => 'Something went wrong'
-        ]);
+        return $this->responseFail('Something went wrong');
     }
 }

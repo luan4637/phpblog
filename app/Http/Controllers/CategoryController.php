@@ -33,7 +33,7 @@ class CategoryController extends Controller
         /** @var \App\Infrastructure\Persistence\Pagination\PaginationResultInterface */
         $paginationResult = $this->categoryRepository->paginate($this->categoryFilter);
 
-        return response()->json($paginationResult);
+        return $this->responseSuccess($paginationResult);
     }
 
     public function get(Request $request, int $id)
@@ -41,13 +41,10 @@ class CategoryController extends Controller
         $category = $this->categoryRepository->find($id);
 
         if (!$category) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Item does not found'
-            ]);
+            return $this->responseFail('Item does not found');
         }
 
-        return response()->json($category);
+        return $this->responseSuccess($category);
     }
 
     public function save(CategorySaveRequest $request)
@@ -59,26 +56,17 @@ class CategoryController extends Controller
         if ($id) {
             $category = $this->categoryRepository->find($id);
             if (!$category) {
-                return response()->json([
-                    'status' => 'fail',
-                    'message' => 'Item does not found'
-                ]);
+                return $this->responseFail('Item does not found');
             }
         }
         $category->fill($request->validated());
         $category->setSlug(str_replace(' ', '-', $category->getName()));
 
         if ($category->save()) {
-            return response()->json([
-                'status' => 'success',
-                'category' => $category
-            ]);
+            return $this->responseSuccess($category);
         }
 
-        return response()->json([
-            'status' => 'fail',
-            'message' => 'Something went wrong'
-        ]);
+        return $this->responseFail('Something went wrong');
     }
 
     public function delete(CategoryDeleteRequest $request)
@@ -89,22 +77,13 @@ class CategoryController extends Controller
         /** @var CategoryModel|null $category */
         $category = $this->categoryRepository->find($id);
         if (!$category) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Item does not found'
-            ]);
+            return $this->responseFail('Item does not found');
         }
 
         if ($category->delete()) {
-            return response()->json([
-                'status' => 'success',
-                'category' => $category
-            ]);
+            return $this->responseSuccess($category);
         }
 
-        return response()->json([
-            'status' => 'fail',
-            'message' => 'Something went wrong'
-        ]);
+        return $this->responseFail('Something went wrong');
     }
 }
