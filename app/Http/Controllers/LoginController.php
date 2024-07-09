@@ -17,6 +17,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             
+            /** @var \App\Core\User\UserModel $user */
             $user = auth()->user();
             $user->token = $user->createToken('MyApp')->plainTextToken;
  

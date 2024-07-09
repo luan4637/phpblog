@@ -41,11 +41,25 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getPosition()
+    {
+        if ($this->request->string('position')->isEmpty()) {
+            return null;
+        }
+
+        $value = $this->request->string('position');
+
+        return $value;
+    }
+
+    /**
      * @return array
      */
     public function getSortFields(): array
     {
-        return [ 'id', 'title', 'published' ];
+        return [ 'id', 'title', 'published', 'position' ];
     }
 
     /**
@@ -63,6 +77,9 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
         }
         if ($this->getPublished() !== null) {
             $conditions[] = [ 'column' => 'published', 'condition' => '=', 'value' => $this->getPublished() ];
+        }
+        if ($this->getPosition() !== null) {
+            $conditions[] = [ 'column' => 'position', 'condition' => '=', 'value' => $this->getPosition() ];
         }
 
         return $conditions;

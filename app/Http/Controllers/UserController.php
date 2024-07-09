@@ -57,7 +57,11 @@ class UserController extends Controller
                 return $this->responseFail('Item does not found');
             }
         }
-        $user->fill($request->validated());
+        $data = $request->validated();
+        if (!$data['password']) {
+            unset($data['password']);
+        }
+        $user->fill($data);
 
         if ($user->save()) {
             return $this->responseSuccess($user);
