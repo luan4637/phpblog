@@ -3,6 +3,7 @@ namespace App\Core\Post;
 
 use App\Infrastructure\Persistence\RequestFilter\RequestFilter;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
+use Illuminate\Database\Eloquent\Builder;
 
 class PostFilter extends RequestFilter implements RequestFilterInterface
 {
@@ -55,6 +56,20 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getCategory()
+    {
+        if ($this->request->string('category')->isEmpty()) {
+            return null;
+        }
+
+        $value = $this->request->string('category');
+
+        return $value;
+    }
+
+    /**
      * @return array
      */
     public function getSortFields(): array
@@ -81,8 +96,28 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
         if ($this->getPosition() !== null) {
             $conditions[] = [ 'column' => 'position', 'condition' => '=', 'value' => $this->getPosition() ];
         }
+        if ($this->getCategory() !== null) {
+
+        }
 
         return $conditions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function manyRelationClause(): array
+    {
+        if ($this->getCategory() !== null) {
+            return [
+                'relationName' => 'categories',
+                'builderFunction' => function (Builder $query) {
+                    $query->where('slug', '=', $this->getCategory());
+                }
+            ];
+        }
+        
+        return [];
     }
 
     /**

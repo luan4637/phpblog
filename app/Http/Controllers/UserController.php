@@ -25,6 +25,10 @@ class UserController extends Controller
         $this->userFilter = new UserFilter();
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $this->userFilter->setRequest($request);
@@ -34,8 +38,14 @@ class UserController extends Controller
         return $this->responseSuccess($paginationResult);
     }
 
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function get(Request $request, int $id)
     {
+        /** @var UserModel|null $user */
         $user = $this->userRepository->find($id);
 
         if (!$user) {
@@ -45,6 +55,10 @@ class UserController extends Controller
         return $this->responseSuccess($user);
     }
 
+    /**
+     * @param UserSaveRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function save(UserSaveRequest $request)
     {
         /** @var int $id */

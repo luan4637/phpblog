@@ -27,6 +27,10 @@ class PostController extends Controller
         $this->postFilter = new PostFilter();
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $this->postFilter->setRequest($request);
@@ -37,8 +41,14 @@ class PostController extends Controller
         return $this->responseSuccess($paginationResult);
     }
 
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function get(Request $request, int $id)
     {
+        /** @var PostModel|null $post */
         $post = $this->postRepository->find($id);
         if (!$post) {
             return $this->responseFail('Item does not found');
@@ -46,6 +56,10 @@ class PostController extends Controller
         return $this->responseSuccess($post);
     }
 
+    /**
+     * @param PostSaveRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function save(PostSaveRequest $request)
     {
         /** @var int $id */
@@ -79,11 +93,13 @@ class PostController extends Controller
         return $this->responseFail('Something went wrong');
     }
 
-    public function delete(PostDeleteRequest $request)
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete(Request $request, int $id)
     {
-        /** @var int $id */
-        $id = $request->getId();
-
         /** @var PostModel|null $post */
         $post = $this->postRepository->find($id);
         if (!$post) {

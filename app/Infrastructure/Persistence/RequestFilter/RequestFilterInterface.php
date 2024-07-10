@@ -18,6 +18,11 @@ interface RequestFilterInterface
     /**
      * @return array
      */
+    public function manyRelationClause(): array;
+
+    /**
+     * @return array
+     */
     public function getTableRelated(): array;
 
     /**

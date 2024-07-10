@@ -4,6 +4,7 @@ namespace App\Infrastructure\Persistence\Repositories;
 use App\Infrastructure\Persistence\Pagination\PaginationResult;
 use App\Infrastructure\Persistence\Pagination\PaginationResultInterface;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
+use Illuminate\Database\Eloquent\Builder;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
@@ -54,6 +55,14 @@ abstract class BaseRepository implements BaseRepositoryInterface
                 $condition['value']
             );
         }
+
+        $manyRelationClause = $filter->manyRelationClause();
+        if ($manyRelationClause) {
+            $relationName = $manyRelationClause['relationName'];
+            $builder = $manyRelationClause['builderFunction'];
+            $results = $results->whereHas($relationName, $builder);
+        }
+
         $results = $results->orderBy($filter->getSort(), $filter->getOrder());
         $results = $results->paginate($filter->getLimit());
         return new PaginationResult($results->all(), $results->total());

@@ -71,6 +71,14 @@ class CategoryFilter extends RequestFilter implements RequestFilterInterface
     /**
      * @inheritdoc
      */
+    public function manyRelationClause(): array
+    {
+        return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getTableRelated(): array
     {
         return [];
