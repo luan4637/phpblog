@@ -18,12 +18,16 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
         $password = Hash::make('admin');
 
-        UserModel::factory()->makeOne([
-            'name' => 'Admin',
-            'email' => 'luan4637@gmail.com',
-            'password' => $password,
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-        ]);
+        try {
+            UserModel::factory()->create([
+                'name' => 'Admin',
+                'email' => 'luan4637@gmail.com',
+                'password' => $password,
+                'email_verified_at' => now(),
+                'remember_token' => Str::random(10),
+            ]);
+        } catch(\Exception $e) {
+            echo 'Exist one: luan4637@gmail.com';
+        }
     }
 }
