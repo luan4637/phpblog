@@ -1,0 +1,169 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  selector:
+    app: mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-read
+  labels:
+    app: mysql
+    readonly: "true"
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  selector:
+    app: mysql
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-configmap
+data:
+  primary.cnf: |
+    [mysqld]
+    log-bin
+  replica.cnf: |
+    [mysqld]
+    super-read-only
+  primarydb.sql: |
+    CREATE DATABASE IF NOT EXISTS phpblog_db CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+    CREATE USER IF NOT EXISTS 'phpblog_user'@'%' IDENTIFIED BY 'phpblog_password';
+    GRANT ALL PRIVILEGES ON phpblog_db.* TO 'phpblog_user'@'%' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
+  initdb.sql: |
+    SET GLOBAL read_only = OFF;
+    DROP DATABASE IF EXISTS phpblog_db;
+    CREATE DATABASE IF NOT EXISTS phpblog_db CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+    CREATE USER IF NOT EXISTS 'phpblog_user'@'%' IDENTIFIED BY 'phpblog_password';
+    GRANT ALL PRIVILEGES ON phpblog_db.* TO 'phpblog_user'@'%' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
+    USE phpblog_db;
+    source /tmp/dump_primarydb.sql
+    SET GLOBAL read_only = ON;
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: mysql
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0.39
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "1"
+        # - name: MYSQL_USER
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: secret-mysql
+        #       key: mysql-user
+        # - name: MYSQL_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: secret-mysql
+        #       key: mysql-password
+        ports:
+        - name: mysql-port
+          containerPort: 3306
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - bash
+              - "-c"
+              - |
+                set -ex
+                [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
+                ordinal=${BASH_REMATCH[1]}
+                echo [mysqld] > /etc/mysql/conf.d/mysqld.cnf
+                if [[ $ordinal -eq 0 ]]; then
+                  echo log-bin >> /etc/mysql/conf.d/mysqld.cnf
+                else
+                  echo super-read-only >> /etc/mysql/conf.d/mysqld.cnf
+                fi
+                echo server-id=$((1 + $ordinal)) >> /etc/mysql/conf.d/mysqld.cnf
+        # readinessProbe:
+        startupProbe:
+          exec:
+            command:
+            - bash
+            - "-c"
+            - |
+              set -ex
+              [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
+              ordinal=${BASH_REMATCH[1]}
+              if [[ $ordinal -eq 0 ]]; then
+                mysql -u root -e 'source /tmp/config-map/primarydb.sql'
+              else
+                mysql -h mysql-0.mysql -u root -e 'show master status\G' > /tmp/master-status.txt
+
+                readarray -t lines < /tmp/master-status.txt
+
+                LINELOGFILE=${lines[1]}
+                [[ $LINELOGFILE =~ :[[:space:]]+(.*?)$ ]] || exit 1
+                LOGFILE=${BASH_REMATCH[1]}
+
+                LINELOGPOS=${lines[2]}
+                [[ $LINELOGPOS =~ :[[:space:]]+(.*?)$ ]] || exit 1
+                LOGPOS=${BASH_REMATCH[1]}
+
+                echo "STOP REPLICA;" > /tmp/prepare_replica.sql
+                echo "CHANGE REPLICATION SOURCE TO SOURCE_HOST='mysql-0.mysql', SOURCE_USER='root', SOURCE_PASSWORD='', SOURCE_LOG_FILE='$LOGFILE', SOURCE_LOG_POS=$LOGPOS;" >> /tmp/prepare_replica.sql
+                
+                mysqldump -h mysql-0.mysql -u root phpblog_db > /tmp/dump_primarydb.sql
+
+                mysql -u root -e 'source /tmp/prepare_replica.sql'
+                mysql -u root -e 'source /tmp/config-map/initdb.sql'
+
+                mysql -u root -e 'START REPLICA;'
+              fi
+          initialDelaySeconds: 5
+          # periodSeconds: 2
+          timeoutSeconds: 300
+        volumeMounts:
+        - name: mysql-pvc
+          mountPath: /var/lib/mysql
+        - name: mysql-config
+          mountPath: /tmp/config-map
+      volumes:
+      # - name: mysql-data
+      #   persistentVolumeClaim:
+      #     claimName: mysql-pvc
+      - name: mysql-config
+        configMap:
+          name: mysql-configmap
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-pvc
+    spec:
+      storageClassName: manual
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      selector:
+        matchLabels:
+          type: local
+---

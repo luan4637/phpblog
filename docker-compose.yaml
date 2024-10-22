@@ -1,0 +1,45 @@
+version: '0.01'
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./:/usr/share
+      - ./server-conf/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - internal
+  php:
+    container_name: php
+    build:
+      dockerfile: dockerfile
+      context: .
+    # ports:
+    #   - 9000:9000
+    #   - 9001:9001
+    volumes:
+      - ./:/usr/share
+      - ./server-conf/php.ini:/usr/local/etc/php/php.ini
+      - ./server-conf/fpm.conf:/usr/local/etc/php-fpm.d/fpm.conf
+    networks:
+      - internal
+  mysql:
+    image: mysql:8.0.39
+    # ports:
+    #   - 3306:3306
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: phpblog_db
+      MYSQL_USER: phpblog_user
+      MYSQL_PASSWORD: phpblog_password
+    # volumes:
+    #   - './mysqldata:/var/lib/mysql'
+    networks:
+      - internal
+networks:
+  internal:
+    driver: bridge
+
+# Volumes
+# volumes:
+#   mysqldata:
