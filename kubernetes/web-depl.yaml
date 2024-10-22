@@ -22,7 +22,6 @@ spec:
           cd /usr/share/nginx/html
           apk add --no-cache git && git clone https://github.com/luan4637/phpblog.git .
           git pull
-          echo initial > initial2.txt
         volumeMounts:
         - name: web-pvc
           mountPath: /usr/share/nginx/html
@@ -57,7 +56,7 @@ spec:
               php -r "unlink('composer-setup.php');"
               php composer.phar install --no-dev
               php artisan migrate
-              # php artisan db:seed
+              php artisan db:seed
               # fi
           initialDelaySeconds: 5
           timeoutSeconds: 600
