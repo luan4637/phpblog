@@ -40,6 +40,12 @@ login password: admin
 ## add host file
 127.0.0.1 phpblog.private
 
+## add redis host
+docker run -d --name redis-host --network minikube redis
+
+## add memcached host
+docker run -d --name memcached-host --network minikube memcached
+
 ## start minikube
 minikube start --driver=docker --nodes=2 --insecure-registry=registry:5000 --mount --mount-string C://Users//Luan//kubevolume:/mnt/data
 

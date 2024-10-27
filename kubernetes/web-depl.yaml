@@ -56,8 +56,10 @@ spec:
               php -r "unlink('composer-setup.php');"
               php composer.phar install --no-dev
               cp -f .env.kube .env
+              chmod -R 777 /usr/share/nginx/html/storage
               php artisan migrate
               php artisan db:seed
+              php artisan cache:clear
               # fi
           initialDelaySeconds: 5
           timeoutSeconds: 600
