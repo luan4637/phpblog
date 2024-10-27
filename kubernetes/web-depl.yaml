@@ -55,6 +55,7 @@ spec:
               php composer-setup.php
               php -r "unlink('composer-setup.php');"
               php composer.phar install --no-dev
+              cp -f .env.kube .env
               php artisan migrate
               php artisan db:seed
               # fi
