@@ -3,10 +3,21 @@ namespace App\Http\Controllers;
  
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\JsonResponse;
  
 class LoginController extends Controller
 {
+    public function index(Request $request)
+    {
+        /** @var \App\Core\User\UserModel $user */
+        $user = auth()->user();
+
+        if ($user) {
+            return $this->responseSuccess($user);
+        }
+        
+        return $this->responseFail('User does not found');
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->validate([

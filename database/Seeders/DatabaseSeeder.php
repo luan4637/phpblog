@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
                 'remember_token' => Str::random(10),
             ]);
         } catch(\Exception $e) {
-            echo 'Exist one: luan4637@gmail.com';
+            echo 'Error: ' . $e->getMessage();
         }
     }
 }

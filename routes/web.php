@@ -6,10 +6,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PostController;
 
-Route::get('/login', [LoginController::class, 'login']);
+Route::get('/login', [LoginController::class, 'index']);
 Route::post('/login', [LoginController::class, 'login']);
 
-// Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     // category
     Route::get('/category', [CategoryController::class, 'index']);
     Route::get('/category/{id}', [CategoryController::class, 'get']);
@@ -26,8 +26,4 @@ Route::post('/login', [LoginController::class, 'login']);
     Route::get('/user', [UserController::class, 'index']);
     Route::get('/user/{id}', [UserController::class, 'get']);
     Route::post('/user/save', [UserController::class, 'save']);
-// });
-
-
-
-
+});

@@ -1,20 +1,62 @@
-# create database
+# ----------------- Manual install -----------------
+## create database
 CREATE DATABASE phpblog_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER 'phpblog_user'@'localhost' IDENTIFIED BY 'phpblog_password';
 GRANT ALL PRIVILEGES ON phpblog_db.* TO 'phpblog_user'@'localhost';
 FLUSH PRIVILEGES;
 
-# migrate database
+## migrate database
 php artisan migrate
 
-# create user admin
+## create user admin
 php artisan db:seed
 
 login email: luan4637@gmail.com
 login password: admin
 
-# start server
+## start server
 php artisan serve
+
+
+# ----------------- Docker compose install -----------------
+## add host file
+127.0.0.1 phpblog.private
+
+## start server
+cd [ROOT]
+docker compose up
+
+## migrate database
+php artisan migrate
+
+## create user admin
+php artisan db:seed
+
+login email: luan4637@gmail.com
+login password: admin
+
+
+# ----------------- Kuberneters -----------------
+## add host file
+127.0.0.1 phpblog.private
+
+## start minikube
+minikube start --driver=docker --nodes=2 --insecure-registry=registry:5000 --mount --mount-string C://Users//Luan//kubevolume:/mnt/data
+
+## register phpfpm image
+docker build -t phpfpm:latest .
+docker run -d --name registry --network minikube -p 5001:5000 registry:2.7
+docker image tag phpfpm:latest registry:5001/phpfpm:latest
+docker push registry:5001/phpfpm:latest
+
+## start application
+cd [ROOT]/kubernetes
+kubectl apply -f mysql-statefull.yaml
+kubectl apply -f web-depl.yaml
+kubectl apply -f web-ingress.yaml
+minikube tunnel
+
+
 
 # screenshoots
 ![screenshot](client.png)

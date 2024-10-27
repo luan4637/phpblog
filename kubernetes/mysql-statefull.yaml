@@ -138,7 +138,7 @@ spec:
 
                 mysql -u root -e 'START REPLICA;'
               fi
-          initialDelaySeconds: 5
+          initialDelaySeconds: 10
           # periodSeconds: 2
           timeoutSeconds: 300
         volumeMounts:
@@ -157,13 +157,13 @@ spec:
   - metadata:
       name: mysql-pvc
     spec:
-      storageClassName: manual
       accessModes:
       - ReadWriteOnce
       resources:
         requests:
           storage: 1Gi
-      selector:
-        matchLabels:
-          type: local
+      # storageClassName: manual
+      # selector:
+      #   matchLabels:
+      #     type: local
 ---
