@@ -21,7 +21,7 @@ spec:
         - |
           cd /usr/share/nginx/html
           apk add --no-cache git && git clone https://github.com/luan4637/phpblog.git .
-          git pull
+          git reset --hard && git pull
         volumeMounts:
         - name: web-pvc
           mountPath: /usr/share/nginx/html
