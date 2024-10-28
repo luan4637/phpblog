@@ -47,6 +47,8 @@ docker run -d --name redis-host --network minikube redis
 docker run -d --name memcached-host --network minikube memcached
 
 ## start minikube
+minikube start --driver=docker --nodes=2 --insecure-registry=registry:5000
+OR
 minikube start --driver=docker --nodes=2 --insecure-registry=registry:5000 --mount --mount-string C://Users//Luan//kubevolume:/mnt/data
 
 ## register phpfpm image
