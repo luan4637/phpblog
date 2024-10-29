@@ -6,6 +6,7 @@
 /storage/*.key
 /vendor
 /public/upload/*
+!/public/upload/.gitkeep
 .env.backup
 .env.production
 .phpactor.json
