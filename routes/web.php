@@ -8,6 +8,7 @@ use App\Http\Controllers\PostController;
 
 Route::get('/login', [LoginController::class, 'index']);
 Route::post('/login', [LoginController::class, 'login']);
+Route::get('/logout', [LoginController::class, 'logout']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // category

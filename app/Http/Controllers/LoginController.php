@@ -37,4 +37,9 @@ class LoginController extends Controller
  
         return $this->responseFail('Something went wrong!');
     }
+
+    public function logout(Request $request)
+    {
+        return $this->responseSuccess(true);
+    }
 }
