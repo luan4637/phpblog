@@ -4,6 +4,16 @@ metadata:
   name: web-ingress
 spec:
   rules:
+  - host: vueblog.private
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: client-service
+            port:
+              number: 80
   - host: phpblog.private
     http:
       paths:
@@ -13,4 +23,4 @@ spec:
           service:
             name: web-service
             port:
-              number: 80
+              number: 8080
