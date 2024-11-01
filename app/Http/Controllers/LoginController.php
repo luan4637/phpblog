@@ -13,9 +13,9 @@ class LoginController extends Controller
         /** @var UserModel $user */
         $user = new UserModel();
         $user->fill([
-            'id' => 10,
+            'id' => 1,
             'name' => 'guest',
-            'email' => 'guest1@mail.com',
+            'email' => 'guest@mail.com',
             'password' => 'guest'
         ]);
         

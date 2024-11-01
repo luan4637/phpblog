@@ -20,6 +20,17 @@ class DatabaseSeeder extends Seeder
 
         try {
             UserModel::factory()->create([
+                'name' => 'guest',
+                'email' => 'guest@mail.com',
+                'password' => 'guest',
+                'email_verified_at' => now(),
+            ]);
+        } catch(\Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+
+        try {
+            UserModel::factory()->create([
                 'name' => 'Admin',
                 'email' => 'luan4637@gmail.com',
                 'password' => $password,
