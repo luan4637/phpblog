@@ -39,6 +39,8 @@ login password: admin
 # ----------------- Kuberneters -----------------
 ## add host file
 127.0.0.1 phpblog.private
+127.0.0.1 vueblog.private
+127.0.0.1 admin.vueblog.private
 
 ## add redis host
 docker run -d --name redis-host --network minikube redis
@@ -64,6 +66,9 @@ kubectl apply -f web-depl.yaml
 kubectl apply -f web-ingress.yaml
 minikube tunnel
 
+# admin login
+login email: luan4637@gmail.com
+login password: admin
 
 
 # screenshoots
