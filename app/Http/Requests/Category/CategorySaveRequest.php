@@ -13,9 +13,20 @@ class CategorySaveRequest extends FormRequest
     {
         return [
             'name' => 'required|max:255',
+            'slug' => 'string|max:255',
             'description' => 'nullable|string',
             'showInNav' => 'boolean'
         ];
+    }
+
+    /**
+     * @return void
+     */
+    public function prepareForValidation()
+    {
+        $this->mergeIfMissing([
+            'slug' => str_replace(' ', '-', $this->string('name'))
+        ]);
     }
 
     /**

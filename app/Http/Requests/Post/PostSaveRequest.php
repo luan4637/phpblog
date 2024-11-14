@@ -13,6 +13,7 @@ class PostSaveRequest extends FormRequest
     {
         return [
             'title' => 'required|max:255',
+            'slug' => 'string|max:255',
             'content' => 'nullable|string',
             'published' => 'boolean',
             'position' => 'string|max:16',
@@ -28,6 +29,10 @@ class PostSaveRequest extends FormRequest
         $this->merge([
             'published' => $this->toBoolean($this->published),
             'position' => $this->position === null ? '' : $this->position
+        ]);
+
+        $this->mergeIfMissing([
+            'slug' => str_replace(' ', '-', $this->string('title'))
         ]);
     }
 

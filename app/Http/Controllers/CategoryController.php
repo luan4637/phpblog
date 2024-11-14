@@ -74,7 +74,6 @@ class CategoryController extends Controller
             }
         }
         $category->fill($request->validated());
-        $category->setSlug(str_replace(' ', '-', $category->getName()));
 
         if ($category->save()) {
             return $this->responseSuccess($category);

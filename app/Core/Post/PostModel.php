@@ -3,6 +3,7 @@ namespace App\Core\Post;
 
 use App\Core\Category\CategoryModel;
 use App\Core\User\UserModel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -22,6 +23,16 @@ class PostModel extends Model
         'title', 'slug', 'content', 'userId', 'published', 'position', 'picture'
     ];
 
+    /**
+     * @return array
+     */
+    protected function casts(): array
+    {
+        return [
+            'published' => 'boolean',
+        ];
+    }
+
     public function categories()
     {
         return $this->belongsToMany(
@@ -36,6 +47,18 @@ class PostModel extends Model
     {
         return $this->belongsTo(UserModel::class, 'userId');
     }
+
+    /**
+     * @return Attribute
+     */
+    // protected function slug(): Attribute
+    // {
+    //     return Attribute::make(
+    //         set: function (string $value) {
+    //             return str_replace(' ', '-', $this->title);
+    //         },
+    //     );
+    // }
 
     /** 
      * @param string $value

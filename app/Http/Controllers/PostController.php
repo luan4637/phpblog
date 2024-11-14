@@ -75,7 +75,6 @@ class PostController extends Controller
             $post->setUserId(Auth::id());
         }
         $post->fill($request->validated());
-        $post->setSlug(str_replace(' ', '-', $post->getTitle()));
 
         $picture = $request->file('picture');
         if ($picture) {
