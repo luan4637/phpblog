@@ -24,6 +24,12 @@ interface BaseRepositoryInterface
     public function find(int $id);
 
     /**
+     * @param array|string $relations
+     * @return $this
+     */
+    public function with($relations);
+
+    /**
      * @param array $attributes
      * @return mixed
      */

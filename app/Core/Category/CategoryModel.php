@@ -22,6 +22,10 @@ class CategoryModel extends Model
         'name', 'slug', 'description', 'image', 'showInNav'
     ];
 
+    protected $hidden = [
+        'pivot'
+    ];
+
     public function posts()
     {
         return $this->belongsToMany(

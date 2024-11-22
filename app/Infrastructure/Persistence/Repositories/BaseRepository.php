@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Builder;
 abstract class BaseRepository implements BaseRepositoryInterface
 {
     /**
+     * @var array|string
+     */
+    private $relations;
+
+    /**
      * @var \Illuminate\Database\Eloquent\Model
      */
     protected $model;
@@ -74,9 +79,23 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     public function find(int $id)
     {
-        $result = $this->model->find($id);
+        $model = $this->model;
+        
+        if ($this->relations) {
+            $model = $model->with($this->relations);
+        }
 
-        return $result;
+        return $model->find($id);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function with($relations)
+    {
+        $this->relations = $relations;
+
+        return $this;
     }
 
     /**

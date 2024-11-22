@@ -23,4 +23,18 @@ class TestController extends Controller
 
         echo 'test';
     }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createToken(Request $request)
+    {
+        $user = $request->user();
+        var_dump($user->email);
+        die;
+        $token = $user->createToken($request->token_name);
+ 
+        return ['token' => $token->plainTextToken];
+    }
 }

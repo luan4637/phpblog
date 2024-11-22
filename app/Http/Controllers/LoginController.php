@@ -20,7 +20,7 @@ class LoginController extends Controller
         ]);
         
         $expire = date('Y-m-d H:i:s', strtotime("+1 hour"));
-        $token = $user->createToken('MyApp', ['*'], new DateTime($expire));
+        $token = $user->createToken(env('APP_NAME'), ['*'], new DateTime($expire));
 
         if ($token) {
             return $this->responseSuccess(['token' => $token->plainTextToken]);
@@ -37,13 +37,19 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            // $request->session()->regenerate();
             
+            /** @var string $expire */
+            $expire = date('Y-m-d H:i:s', strtotime("+1 hour"));
             /** @var \App\Core\User\UserModel $user */
-            $user = auth()->user();
-            $user->token = $user->createToken('MyApp')->plainTextToken;
+            $user = Auth::user();
+            /** @var \Laravel\Sanctum\NewAccessToken $token */
+            $token = $user->createToken(env('APP_NAME'), ['*'], new DateTime($expire));
+            $user->token = $token->plainTextToken;
  
             return $this->responseSuccess($user);
+        } else {
+            return $this->responseFail('Invalid email or password!');
         }
  
         return $this->responseFail('Something went wrong!');

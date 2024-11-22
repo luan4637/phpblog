@@ -9,6 +9,7 @@ use App\Http\Requests\Post\PostDeleteRequest;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class PostController extends Controller
 {
@@ -49,7 +50,7 @@ class PostController extends Controller
     public function get(Request $request, int $id)
     {
         /** @var PostModel|null $post */
-        $post = $this->postRepository->find($id);
+        $post = $this->postRepository->with(['categories', 'user'])->find($id);
         if (!$post) {
             return $this->responseFail('Item does not found');
         }
@@ -70,20 +71,26 @@ class PostController extends Controller
             $post = $this->postRepository->find($id);
             if (!$post) {
                 return $this->responseFail('Item does not found');
+            } elseif (!Gate::allows(['post-update'], $post)) {
+                return $this->responseFail('Permission denied!');
             }
         } else {
             $post->setUserId(Auth::id());
         }
         $post->fill($request->validated());
 
+        /** @var \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]|array|null $picture */
         $picture = $request->file('picture');
+
         if ($picture) {
+            /** @var string $pictureName */
             $pictureName = md5(date('Y-m-d H:i:s') . $picture->getClientOriginalName()) . '.' . $picture->extension();
             $picture->move('upload', $pictureName);
             $post->setPicture('/upload/' . $pictureName);
         }
 
         if ($post->save()) {
+            $post->categories()->detach($post->categories);
             $post->categories()->attach($request->getCategories());
             
             return $this->responseSuccess($post);
@@ -101,8 +108,11 @@ class PostController extends Controller
     {
         /** @var PostModel|null $post */
         $post = $this->postRepository->find($id);
+        
         if (!$post) {
             return $this->responseFail('Item does not found');
+        } elseif (!Gate::allows(['post-update'], $post)) {
+            return $this->responseFail('Permission denied!');
         }
 
         if ($post->delete()) {

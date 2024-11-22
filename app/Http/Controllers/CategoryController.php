@@ -79,7 +79,7 @@ class CategoryController extends Controller
             return $this->responseSuccess($category);
         }
 
-        return $this->responseFail('Something went wrong');
+        return $this->responseFail('Something went wrong!');
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Core\User;
 
 use App\Core\Post\PostModel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,6 +23,7 @@ class UserModel extends Authenticatable
         'name',
         'email',
         'password',
+        'roles',
     ];
   
     /**
@@ -33,6 +35,29 @@ class UserModel extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /**
+     * @return Attribute
+     */
+    protected function roles(): Attribute
+    {
+        return Attribute::make(
+            set: function(array $values) {
+                return json_encode($values);
+            },
+            get: function (string $value) {
+                if (!$value) {
+                    return [];
+                }
+
+                if ($arr = json_decode($value, true)) {
+                    return $arr;
+                }
+
+                return [];
+            }
+        );
+    }
   
     /**
      * @return array
@@ -41,7 +66,7 @@ class UserModel extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password' => 'hashed'
         ];
     }
 
@@ -64,5 +89,21 @@ class UserModel extends Authenticatable
     public function getPassword()
     {
         return $this->password;
+    }
+
+    /**
+     * @param array $values
+     */
+    public function setRoles(array $values)
+    {
+        $this->roles = $values;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
     }
 }
