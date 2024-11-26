@@ -35,6 +35,15 @@ php artisan db:seed
 login email: luan4637@gmail.com
 login password: admin
 
+## install client vuejs
+### client side
+cd [ROOT]/client/frontend
+npm install
+npm run build (OR: npm run watch)
+### admin panel
+cd [ROOT]/client/admin
+npm install
+npm run build (OR: npm run watch)
 
 # ----------------- Kuberneters -----------------
 ## add host file
