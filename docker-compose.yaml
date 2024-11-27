@@ -47,12 +47,14 @@ services:
       - internal
   redis-host:
     image: redis:latest
-    # ports:
-    #   - 6379:6379
+    ports:
+      - 6379:6379
     networks:
       - internal
   memcached-host:
     image: memcached:latest
+    ports:
+      - 11211:11211
     command:
       - --conn-limit=1024
       - --memory-limit=64

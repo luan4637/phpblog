@@ -134,7 +134,3 @@ INSERT INTO `post_category` (`id`, `postId`, `categoryId`) VALUES
 (14, 133, 4),
 (15, 132, 10),
 (16, 132, 1);
-
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Luan Pham', 'luan4637@gmail.com', '2024-06-20 23:57:12', '$2y$12$i1jTosFG3psAbMxw5S29eOBqnAZ.xuXCLX.ENMfK0/8XNYXHuoJS6', '762i7YAFHI', '2024-06-20 23:57:12', '2024-07-09 07:32:45'),
-(4, 'MasterA', 'admin@mail.com', NULL, '$2y$12$BGMizLNzjfeV96vvWFax6.mv/l22Vnr4B6tNRjhamQQBfFohxcO16', NULL, '2024-06-21 04:11:45', '2024-07-09 07:42:30');
