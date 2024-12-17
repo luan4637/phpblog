@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Broadcast;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,5 +35,10 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Database\Eloquent\Factories\Factory::useNamespace('App\\');
 
+        Broadcast::extend('socketio', function () {
+            return new \App\Infrastructure\Services\BroadcastSocketio(
+                config('broadcasting.connections.socketio')
+            );
+        });
     }
 }

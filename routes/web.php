@@ -8,6 +8,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\TestController;
 
 Route::get('/test', [TestController::class, 'index']);
+Route::get('/getcache', [TestController::class, 'getCache']);
 Route::get('/create-token', [TestController::class, 'createToken'])->middleware('auth:sanctum');
 
 Route::get('/login', [LoginController::class, 'index']);
@@ -32,4 +33,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'index'])->can('user-pagination');
     Route::get('/user/{id}', [UserController::class, 'get'])->can('user-view');
     Route::post('/user/save', [UserController::class, 'save'])->can('user-create', 'user-update');
+    Route::get('/notifications/{id}', [UserController::class, 'notifications'])->can('user-view');
 });

@@ -17,6 +17,9 @@ php artisan db:seed
 login email: luan4637@gmail.com
 login password: admin
 
+login email: user@mail.com
+login password: admin
+
 ## install client vuejs
 ### client side
 cd [ROOT]/client/frontend

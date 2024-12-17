@@ -29,5 +29,7 @@ BaseClient.interceptors.response.use(response => {
         alert(error.response.data.message);
     }
 
-    return error;
+    error.response.data.data = {};
+
+    return error.response;
 });

@@ -21,7 +21,7 @@ services:
   php:
     container_name: php
     build:
-      dockerfile: dockerfile
+      dockerfile: ./server-conf/dockerfile
       context: .
     # ports:
     #   - 9000:9000
@@ -30,6 +30,23 @@ services:
       - ./:/usr/share
       - ./server-conf/php.ini:/usr/local/etc/php/php.ini
       - ./server-conf/fpm.conf:/usr/local/etc/php-fpm.d/fpm.conf
+    networks:
+      - internal
+  phpcmd:
+    # image: php:8.3-alpine
+    container_name: phpcmd
+    build:
+      dockerfile: ./server-conf/dockerfilephpcmd
+      context: .
+    volumes:
+      - ./:/usr/share
+      - ./server-conf/php.ini:/usr/local/etc/php/php.ini
+    command:
+      - sh
+      - "-c"
+      - |
+        cd /usr/share
+        php artisan queue:work
     networks:
       - internal
   mysql:
@@ -59,6 +76,19 @@ services:
       - --conn-limit=1024
       - --memory-limit=64
       - --threads=4
+    networks:
+      - internal
+  socketio:
+    image: node:lts-alpine
+    volumes:
+      - ./socketio:/usr/share
+    ports:
+      - 3000:3000
+    command:
+      - sh
+      - "-c"
+      - |
+        cd /usr/share && npm start
     networks:
       - internal
 networks:

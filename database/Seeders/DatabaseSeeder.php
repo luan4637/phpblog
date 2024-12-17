@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
             UserModel::factory()->create([
                 'name' => 'User',
                 'email' => 'user@mail.com',
-                'password' => Hash::make('user'),
+                'password' => Hash::make('admin'),
                 'email_verified_at' => now(),
                 'remember_token' => Str::random(10),
                 'roles' => [Roles::ROLE_USER]
@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // import data sample
-        $scriptPath = app_path() . '/../data_sample.sql';
+        $scriptPath = app_path() . '/../database/data_sample.sql';
         if (file_exists($scriptPath)) {
             $dataSample = file_get_contents($scriptPath);
             DB::unprepared($dataSample);

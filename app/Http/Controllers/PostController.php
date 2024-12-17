@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 use App\Core\Post\PostFilter;
 use App\Core\Post\PostModel;
 use App\Core\Post\PostRepositoryInterface;
+use App\Core\User\UserRepositoryInterface;
 use App\Http\Requests\Post\PostSaveRequest;
 use App\Http\Requests\Post\PostDeleteRequest;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
+use App\Notifications\PostCreated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Notification;
 
 class PostController extends Controller
 {
@@ -18,13 +21,24 @@ class PostController extends Controller
      */
     private PostRepositoryInterface $postRepository;
     /**
+     * @var UserRepositoryInterface $userRepository
+     */
+    private UserRepositoryInterface $userRepository;
+    /**
      * @var RequestFilterInterface $postFilter
      */
     private RequestFilterInterface $postFilter;
 
-    public function __construct(PostRepositoryInterface $postRepository)
-    {
+    /**
+     * @param PostRepositoryInterface $postRepository
+     * @param UserRepositoryInterface $userRepository
+     */
+    public function __construct(
+        PostRepositoryInterface $postRepository,
+        UserRepositoryInterface $userRepository
+    ) {
         $this->postRepository = $postRepository;
+        $this->userRepository = $userRepository;
         $this->postFilter = new PostFilter();
     }
 
@@ -92,6 +106,11 @@ class PostController extends Controller
         if ($post->save()) {
             $post->categories()->detach($post->categories);
             $post->categories()->attach($request->getCategories());
+
+            // if (!$id) {
+                $users = $this->userRepository->getAll();
+                Notification::send($users, new PostCreated($post));
+            // }
             
             return $this->responseSuccess($post);
         }

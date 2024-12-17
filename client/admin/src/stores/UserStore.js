@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { BaseClient } from './BaseClient';
 import router from "../router";
+import { io } from "socket.io-client";
+import { formatDateMixin } from '@/mixins'
 
 export const useUserStore = defineStore('userStore', {
     state: () => ({
@@ -23,6 +25,7 @@ export const useUserStore = defineStore('userStore', {
         },
         users: ref([]),
         user: ref({}),
+        notifications: ref([]),
     }),
     actions: {
         getUsers(filter, page, limit) {
@@ -81,6 +84,38 @@ export const useUserStore = defineStore('userStore', {
                     localStorage.removeItem('user');
                     router.push({ name: 'login' })
                 }
+            });
+        },
+        getNotifications(user) {
+            const userId = user.id;
+
+            if (!userId) {
+                return;
+            }
+
+            let URL = '/notifications/' + userId;
+            const _this = this;
+            BaseClient.get(URL).then(function(response) {
+                _this.notifications = response.data.data;
+            });
+        },
+        bindNotifications(user) {
+            var socket = io.connect('http://phpblog.private:3000', {});
+            const userId = user.id;
+            
+            socket.on('private-App.Core.User.UserModel.' + userId, (data) => {
+                const node = document.createElement('li');
+                const nodeDate = document.createElement('strong');
+                const nodeText = document.createElement('p');
+                nodeDate.append(document.createTextNode(formatDateMixin.methods.formatDate(data.data.createdAt)));
+                nodeText.append(document.createTextNode(data.data.title));
+                node.appendChild(nodeDate);
+                node.appendChild(nodeText);
+                document.getElementById('notification_list').appendChild(node);
+                setTimeout(() => {
+                    let totalNotification = document.getElementById('notification_list').getElementsByTagName('li').length
+                    document.getElementById('notification_total').innerText = totalNotification;
+                }, 100)
             });
         }
     },
