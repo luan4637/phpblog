@@ -72,7 +72,10 @@ export const useUserStore = defineStore('userStore', {
                 const user = response.data.data;
                 localStorage.setItem('user', JSON.stringify(user));
                 if (user.token !== undefined) {
-                    router.push({ name: 'home' })
+                    router.push({ name: 'home' });
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 200);
                 }
             });
         },
@@ -86,14 +89,8 @@ export const useUserStore = defineStore('userStore', {
                 }
             });
         },
-        getNotifications(user) {
-            const userId = user.id;
-
-            if (!userId) {
-                return;
-            }
-
-            let URL = '/notifications/' + userId;
+        getNotifications() {
+            let URL = '/notification';
             const _this = this;
             BaseClient.get(URL).then(function(response) {
                 _this.notifications = response.data.data;
@@ -102,6 +99,10 @@ export const useUserStore = defineStore('userStore', {
         bindNotifications(user) {
             var socket = io.connect('http://phpblog.private:3000', {});
             const userId = user.id;
+
+            if (!userId) {
+                return;
+            }
             
             socket.on('private-App.Core.User.UserModel.' + userId, (data) => {
                 const node = document.createElement('li');

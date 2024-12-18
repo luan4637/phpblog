@@ -27,10 +27,8 @@
             }
         },
         created() {
-            if (this.user.id) {
-                this.userStore.bindNotifications(this.user);
-                this.userStore.getNotifications(this.user);
-            }
+            this.userStore.bindNotifications(this.user);
+            this.userStore.getNotifications();
         }
     }
 </script>
@@ -40,7 +38,7 @@
         <div class="container">
             <div class="header-inner">
                 <RouterLink class="logo" to="/"><img src="../../assets/logo.svg" /></RouterLink>
-                <ul class="header-btns">
+                <ul class="header-btns" v-if="Object.keys(this.user).length">
                     <li>
                         <div class="notification-wrapper">
                             <button class="btn-notification"><i class="fa fa-bell-o"></i><span id="notification_total">{{ notifications.length ?? 0 }}</span></button>
@@ -52,7 +50,7 @@
                             </ul>
                         </div>
                     </li>
-                    <li>{{ user?.email }}</li>
+                    <li>{{ user.email }}</li>
                     <li><a href="#" @click="this.handleClickLogout">Logout</a></li>
                 </ul>
             </div>

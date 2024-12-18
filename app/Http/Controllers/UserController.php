@@ -83,18 +83,4 @@ class UserController extends Controller
 
         return $this->responseFail('Something went wrong');
     }
-
-    /**
-     * @param Request $request
-     */
-    public function notifications(Request $request, int $id)
-    {
-        if ($id) {
-            $user = $this->userRepository->find($id);
-
-            return $this->responseSuccess($user->notifications);
-        }
-
-        return $this->responseFail('Something went wrong');
-    }
 }

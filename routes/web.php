@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\TestController;
 
@@ -33,5 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'index'])->can('user-pagination');
     Route::get('/user/{id}', [UserController::class, 'get'])->can('user-view');
     Route::post('/user/save', [UserController::class, 'save'])->can('user-create', 'user-update');
-    Route::get('/notifications/{id}', [UserController::class, 'notifications'])->can('user-view');
+
+    //notification
+    Route::get('/notification', [NotificationController::class, 'index'])->can('user-view');
 });
