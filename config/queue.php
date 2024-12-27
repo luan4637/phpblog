@@ -71,7 +71,15 @@ return [
             'block_for' => null,
             'after_commit' => false,
         ],
-
+        'rabbitmq' => [
+            'driver' => 'rabbitmq',
+            'host' => 'host.docker.internal',
+            'port' => 5672,
+            'user' => 'guest',
+            'password' => 'guest',
+            'connection' => 'default',
+            'queue' => 'default',
+        ]
     ],
 
     /*

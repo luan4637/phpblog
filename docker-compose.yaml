@@ -47,6 +47,9 @@ services:
       - |
         cd /usr/share
         php artisan queue:work
+    depends_on:
+      rabbitmq:
+        condition: service_started
     networks:
       - internal
   mysql:
@@ -89,6 +92,13 @@ services:
       - "-c"
       - |
         cd /usr/share && npm start
+    networks:
+      - internal
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    ports:
+      - 5672:5672
+      - 15672:15672
     networks:
       - internal
 networks:

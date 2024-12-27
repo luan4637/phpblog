@@ -11,6 +11,7 @@ use App\Http\Controllers\TestController;
 Route::get('/test', [TestController::class, 'index']);
 Route::get('/getcache', [TestController::class, 'getCache']);
 Route::get('/create-token', [TestController::class, 'createToken'])->middleware('auth:sanctum');
+Route::get('/testmsg', [TestController::class, 'sendMessageQueue']);
 
 Route::get('/login', [LoginController::class, 'index']);
 Route::post('/login', [LoginController::class, 'login']);

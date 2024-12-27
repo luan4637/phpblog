@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Infrastructure\Services\RabbitMQQueue\RabbitMQConnector;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +41,12 @@ class AppServiceProvider extends ServiceProvider
             return new \App\Infrastructure\Services\BroadcastSocketio(
                 config('broadcasting.connections.socketio')
             );
+        });
+
+        $manager = $this->app['queue'];
+        $manager->addConnector('rabbitmq', function()
+        {
+            return new RabbitMQConnector();
         });
     }
 }

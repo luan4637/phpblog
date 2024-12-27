@@ -8,13 +8,14 @@ RUN apk update && \
     apk add --no-cache oniguruma-dev && \
     apk add --no-cache libxml2-dev && \
     apk add --no-cache php-memcached && \
+    apk add --no-cache linux-headers && \
     apk add --no-cache \
         freetype-dev \
         libpng-dev \
         jpeg-dev \
         libjpeg-turbo-dev
 
-RUN docker-php-ext-install curl gd intl mbstring mysqli pdo pdo_mysql xml
+RUN docker-php-ext-install curl gd intl mbstring mysqli pdo pdo_mysql xml sockets
 
 RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \ 
     && apk --no-cache add libmemcached-dev zlib-dev \

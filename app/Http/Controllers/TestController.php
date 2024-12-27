@@ -1,26 +1,36 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Core\Post\PostModel;
+use App\Core\Post\PostRepositoryInterface;
 use App\Core\User\UserModel;
 use App\Core\User\UserRepositoryInterface;
 use App\Events\MessagePushed;
+use App\Jobs\ProcessPodcast;
 use App\Notifications\PostCreated;
 use ElephantIO\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class TestController extends Controller
 {
     /** @var UserRepositoryInterface $userRepository */
     private UserRepositoryInterface $userRepository;
 
+    private PostRepositoryInterface $postRepository;
+
     /**
      * @param UserRepositoryInterface $userRepository
      */
-    public function __construct(UserRepositoryInterface $userRepository)
-    {
+    public function __construct(
+        UserRepositoryInterface $userRepository,
+        PostRepositoryInterface $postRepository
+    ) {
         $this->userRepository = $userRepository;
+        $this->postRepository = $postRepository;
     }
 
     /**
@@ -39,13 +49,17 @@ class TestController extends Controller
         // var_dump($user);
 
 
+        // ProcessPodcast::dispatch();
         
 
         $users = $this->userRepository->getAll();
+        $userAdmin = $this->userRepository->find(2);
         $message = 'notify message: ' . date('Y-m-d H:i:s');
+        $post = $this->postRepository->find(135);
+        $userAdmin->notify(new PostCreated($post));
 
         // $user->notify(new PostCreated($message));
-        Notification::send($users, new PostCreated($message));
+        // Notification::send($users, new PostCreated($message));
 
         // $index = count($user->notifications);
         // foreach ($user->notifications as $notification) {
@@ -66,6 +80,8 @@ class TestController extends Controller
         // $client->disconnect();
 
         // event(new MessagePushed($message));
+
+
 
         echo $message;
     }
@@ -89,5 +105,18 @@ class TestController extends Controller
         $token = $user->createToken($request->token_name);
  
         return ['token' => $token->plainTextToken];
+    }
+
+    public function sendMessageQueue(Request $request)
+    {
+        $connection = new AMQPStreamConnection('host.docker.internal', 5672, 'guest', 'guest');
+        $channel = $connection->channel();
+
+        $channel->queue_declare('hello', false, false, false, false);
+
+        $msg = new AMQPMessage('Hello World 111!');
+        $channel->basic_publish($msg, '', 'hello');
+
+        echo " [x] Sent 'Hello World!'\n";  
     }
 }
