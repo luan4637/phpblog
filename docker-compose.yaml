@@ -46,7 +46,7 @@ services:
       - "-c"
       - |
         cd /usr/share
-        php artisan queue:work
+        sleep 10 && php artisan queue:work
     depends_on:
       rabbitmq:
         condition: service_started
