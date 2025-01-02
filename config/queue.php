@@ -73,12 +73,11 @@ return [
         ],
         'rabbitmq' => [
             'driver' => 'rabbitmq',
-            'host' => 'host.docker.internal',
-            'port' => 5672,
-            'user' => 'guest',
-            'password' => 'guest',
-            'connection' => 'default',
-            'queue' => 'default',
+            'host' => env('RABBITMQ_HOST', 'host.docker.internal'),
+            'port' => env('RABBITMQ_PORT', 5672),
+            'user' => env('RABBITMQ_USER', 'guest'),
+            'password' => env('RABBITMQ_PASSWORD', 'guest'),
+            'queue' => env('RABBITMQ_QUEUE', 'default'),
         ]
     ],
 

@@ -18,7 +18,8 @@ class RabbitMQConnector implements ConnectorInterface
                 $config['port'],
                 $config['user'],
                 $config['password']
-            )
+            ),
+            $config['queue']
         );
     }
 }

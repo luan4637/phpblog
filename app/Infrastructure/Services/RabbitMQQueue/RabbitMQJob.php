@@ -68,7 +68,9 @@ class RabbitMQJob extends Job implements JobContract
      */
     public function attempts(): int
     {
-        if (! $data = $this->getRabbitMQMessageHeaders()) {
+        $data = $this->getRabbitMQMessageHeaders();
+
+        if (!$data) {
             return 1;
         }
 
@@ -118,6 +120,7 @@ class RabbitMQJob extends Job implements JobContract
      *
      * @throws AMQPProtocolChannelException
      */
+    /*
     public function release($delay = 0): void
     {
         parent::release();
@@ -129,7 +132,7 @@ class RabbitMQJob extends Job implements JobContract
         // Because this Job message is always recreated and pushed as new message, this Job message is correctly handled.
         // We must tell rabbitMQ this job message can be removed by acknowledging the message.
         $this->rabbitmq->ack($this);
-    }
+    }*/
 
     /**
      * Get the underlying RabbitMQ connection.

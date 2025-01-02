@@ -49,14 +49,14 @@ class TestController extends Controller
         // var_dump($user);
 
 
-        // ProcessPodcast::dispatch();
+        ProcessPodcast::dispatch()->onQueue('default');
         
 
         $users = $this->userRepository->getAll();
         $userAdmin = $this->userRepository->find(2);
         $message = 'notify message: ' . date('Y-m-d H:i:s');
         $post = $this->postRepository->find(135);
-        $userAdmin->notify(new PostCreated($post));
+        // $userAdmin->notify(new PostCreated($post));
 
         // $user->notify(new PostCreated($message));
         // Notification::send($users, new PostCreated($message));

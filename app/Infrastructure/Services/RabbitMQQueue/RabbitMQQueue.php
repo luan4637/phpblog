@@ -4,6 +4,7 @@ namespace App\Infrastructure\Services\RabbitMQQueue;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Illuminate\Contracts\Queue\ClearableQueue;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
 use Illuminate\Queue\Queue;
@@ -11,13 +12,25 @@ use RuntimeException;
 
 class RabbitMQQueue extends Queue implements QueueContract, ClearableQueue
 {
+    /** @var AMQPStreamConnection $connection */
     public $connection;
 
+    /** @var AMQPChannel $channel */
     private $channel;
 
-    public function __construct($connection)
-    {
+    /** @var string $queueDefault */
+    private $queueDefault;
+
+    /**
+     * @param AMQPStreamConnection $connection
+     * @param string $queueDefault
+     */
+    public function __construct(
+        AMQPStreamConnection $connection,
+        string $queueDefault
+    ) {
         $this->connection = $connection;
+        $this->queueDefault = $queueDefault;
     }
 
     /**
@@ -37,7 +50,7 @@ class RabbitMQQueue extends Queue implements QueueContract, ClearableQueue
 
     public function getQueue($queue = null): string
     {
-        return $queue ?: 'default';
+        return $queue ?: $this->queueDefault;
     }
 
     /**
@@ -104,7 +117,7 @@ class RabbitMQQueue extends Queue implements QueueContract, ClearableQueue
         $channel->queue_declare($queueName, false, false, false, false);
 
         try {
-            $message = $channel->basic_get($queueName, true);
+            $message = $channel->basic_get($queueName);
             
             if ($message) {
                 return new RabbitMQJob(
@@ -125,15 +138,16 @@ class RabbitMQQueue extends Queue implements QueueContract, ClearableQueue
         
     }
 
-    public function ack()
+    public function ack(RabbitMQJob $job)
     {
-        
+        $this->getChannel()->basic_ack($job->getRabbitMQMessage()->getDeliveryTag());
     }
 
+    /*
     public function laterRaw($delay, $message, $queue = null, $attempts = 1)
     {
         
-    }
+    }*/
 
     public function reject(RabbitMQJob $job, bool $requeue = false)
     {
