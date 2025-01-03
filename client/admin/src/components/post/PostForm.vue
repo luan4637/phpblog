@@ -64,7 +64,7 @@
                 <div id="preview" class="mt-2">
                     <img v-if="post.picture"
                         class="w-25"
-                        :src="(post.picture.indexOf('blob:') > -1 ? '' : IMAGE_URL) + post.picture" />
+                        :src="(post.picture.indexOf('blob:') > -1 || post.picture.indexOf('http') === 0 ? '' : IMAGE_URL) + post.picture" />
                 </div>
             </p>
         </div>

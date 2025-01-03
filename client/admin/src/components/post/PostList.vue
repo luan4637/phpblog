@@ -106,7 +106,7 @@
                 <tbody>
                     <tr v-for="post in posts">
                         <td>
-                            <img v-if="post.picture" :src="IMAGE_URL + post.picture" class="w-100 post-picture" />
+                            <img v-if="post.picture" :src="(post.picture.indexOf('http') === 0 ? '' : IMAGE_URL) + post.picture" class="w-100 post-picture" />
                         </td>
                         <td>{{ post.title }}</td>
                         <td class="align-middle">

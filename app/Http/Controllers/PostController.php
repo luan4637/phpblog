@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -99,8 +100,8 @@ class PostController extends Controller
         if ($picture) {
             /** @var string $pictureName */
             $pictureName = md5(date('Y-m-d H:i:s') . $picture->getClientOriginalName()) . '.' . $picture->extension();
-            $picture->move('upload', $pictureName);
-            $post->setPicture('/upload/' . $pictureName);
+            Storage::put($pictureName, $picture->getContent());
+            $post->setPicture(Storage::url($pictureName));
         }
 
         if ($post->save()) {

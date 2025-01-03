@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use Aws\S3\S3Client;
+use Illuminate\Support\Facades\Storage;
 
 class TestController extends Controller
 {
@@ -84,6 +86,56 @@ class TestController extends Controller
 
 
         echo $message;
+    }
+
+    public function files(Request $request)
+    {
+        
+        // $client = new S3Client([
+        //     'version' => 'latest',
+        //     'region' => 'us-west-2',
+        //     'endpoint' => 'http://host.docker.internal:4566',
+        //     // 'bucket_endpoint' => true,
+        //     // 'endpoint' => 'http://s3.localhost.localstack.cloud:4566',
+        //     'use_path_style_endpoint' => true,
+        //     'credentials' => [
+        //         'key' => 'admin',
+        //         'secret' => 'admin'
+        //     ]
+        // ]);
+        // $bucketName = 'phpblogbucket';
+        // $fileName = 'test.jpg';
+        // $sourceFile = app_path() . '/../public/upload/5f9bbcb2febc89269fd81bdd4846ea02.jpg';
+
+        // try {
+        //     $client->createBucket([
+        //         'Bucket' => $bucketName,
+        //     ]);
+        //     echo "Created bucket named: $bucketName \n";
+        // } catch (\Exception $exception) {
+        //     echo "Failed to create bucket $bucketName with error: " . $exception->getMessage();
+        //     exit("Please fix error with bucket creation before continuing.");
+        // }
+
+        // try {
+        //     $client->putObject([
+        //         'Bucket' => $bucketName,
+        //         'Key' => $fileName,
+        //         'SourceFile' => $sourceFile
+        //     ]);
+        //     echo "Uploaded $fileName to $bucketName.\n";
+        // } catch (\Exception $exception) {
+        //     echo "Failed to upload $fileName with error: " . $exception->getMessage();
+        //     exit("Please fix error with file upload before continuing.");
+        // }
+
+        $sourceFile = app_path() . '/../public/upload/5f9bbcb2febc89269fd81bdd4846ea02.jpg';
+        Storage::put('test3.jpg', file_get_contents($sourceFile));
+
+        // $url = Storage::url('test.jpg');
+        // echo $url;
+
+        echo 'func files';
     }
 
     public function getCache(Request $request)

@@ -104,6 +104,13 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
     networks:
       - internal
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4510-4559:4510-4559"
+    networks:
+      - internal
 networks:
   internal:
     driver: bridge
