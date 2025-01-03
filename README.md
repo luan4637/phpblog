@@ -14,6 +14,9 @@ php artisan migrate
 ## create user admin
 php artisan db:seed
 
+## create aws s3 bucket
+php artisan aws:createbucket
+
 login email: luan4637@gmail.com
 login password: admin
 
