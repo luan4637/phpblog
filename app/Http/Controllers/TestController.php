@@ -51,7 +51,8 @@ class TestController extends Controller
         // var_dump($user);
 
 
-        ProcessPodcast::dispatch()->onQueue('default');
+        // ProcessPodcast::dispatch()->onQueue('default');
+        ProcessPodcast::dispatch();
         
 
         $users = $this->userRepository->getAll();
@@ -142,7 +143,7 @@ class TestController extends Controller
     {
         $value = Cache::get('keytest', 'empty');
 
-        echo $value;
+        return $this->responseFail($value);
     }
 
     /**
