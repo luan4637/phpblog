@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Infrastructure\Services\RabbitMQQueue\RabbitMQConnector;
+use Elastic\Elasticsearch\Client as ElasticClient;
+use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -28,6 +30,14 @@ class AppServiceProvider extends ServiceProvider
             \App\Core\User\UserRepositoryInterface::class,
             \App\Core\User\UserRepository::class
         );
+
+        $this->app->bind(ElasticClient::class, function ($app) {
+            return ClientBuilder::create()
+                ->setHosts(config('services.elasticsearch.hosts'))
+                ->setRetries(config('services.elasticsearch.retries'))
+                ->setSSLVerification(config('services.elasticsearch.ssl'))
+                ->build();
+        });
     }
 
     /**

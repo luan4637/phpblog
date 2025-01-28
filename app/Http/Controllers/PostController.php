@@ -52,7 +52,7 @@ class PostController extends Controller
         $this->postFilter->setRequest($request);
 
         /** @var \App\Infrastructure\Persistence\Pagination\PaginationResultInterface */
-        $paginationResult = $this->postRepository->paginate($this->postFilter);
+        $paginationResult = $this->postRepository->search($this->postFilter);
 
         return $this->responseSuccess($paginationResult);
     }

@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'elasticsearch' => [
+        'hosts' => [
+            env('ELASTICSEARCH_HOST', 'http://localhost:9200')
+        ],
+        'retries' => env('ELASTICSEARCH_RETRIES', '1'),
+        'ssl' => env('ELASTICSEARCH_SSL', false),
+    ],
 ];

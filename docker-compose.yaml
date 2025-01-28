@@ -111,9 +111,21 @@ services:
       - "127.0.0.1:4510-4559:4510-4559"
     environment:
       - DEBUG=${DEBUG:-0}
+    # volumes:
+    #   - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+    #   - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - internal
+  elasticsearch:
+    image: elasticsearch:8.17.0
+    environment:
+      - discovery.type=single-node
+      # - ELASTIC_PASSWORD=elasticpass
     volumes:
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./server-conf/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9200:9200
+      - 9300:9300
     networks:
       - internal
 networks:

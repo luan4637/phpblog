@@ -16,6 +16,7 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use Aws\S3\S3Client;
 use Illuminate\Support\Facades\Storage;
+use Elastic\Elasticsearch\Client as ElasticClient;
 
 class TestController extends Controller
 {
@@ -24,15 +25,19 @@ class TestController extends Controller
 
     private PostRepositoryInterface $postRepository;
 
+    private ElasticClient $elasticsearch;
+
     /**
      * @param UserRepositoryInterface $userRepository
      */
     public function __construct(
         UserRepositoryInterface $userRepository,
-        PostRepositoryInterface $postRepository
+        PostRepositoryInterface $postRepository,
+        ElasticClient $elasticsearch
     ) {
         $this->userRepository = $userRepository;
         $this->postRepository = $postRepository;
+        $this->elasticsearch = $elasticsearch;
     }
 
     /**
@@ -171,5 +176,29 @@ class TestController extends Controller
         $channel->basic_publish($msg, '', 'hello');
 
         echo " [x] Sent 'Hello World!'\n";  
+    }
+
+    public function elastic(Request $request)
+    {
+        // $params = [
+        //     // 'index' => 'my_index',
+        //     'body'  => [
+        //         'query' => [
+        //             'match' => [
+        //                 'title' => 'test'
+        //             ]
+        //         ]
+        //     ]
+        // ];
+
+        $params = [
+            'index' => PostModel::ELASTIC_SEARCH_INDEX,
+            'id'    => '1'
+        ];
+        
+        $results = $this->elasticsearch->get($params);
+        // var_dump($results->asArray());
+
+        return $this->responseSuccess($results->__get('_source'));
     }
 }

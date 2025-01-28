@@ -13,6 +13,8 @@ class PostModel extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const ELASTIC_SEARCH_INDEX = 'postmodel';
+
     const CREATED_AT = 'createdAt';
     const UPDATED_AT = 'updatedAt';
     const DELETED_AT = 'deletedAt';
@@ -103,13 +105,13 @@ class PostModel extends Model
     /**
      * @return int
      */
-    public function getUserId()
+    public function getUserId(): int
     {
         return $this->userId;
     }
 
     /** 
-     * @param string $value
+     * @param void
      */
     public function setPicture(string $value)
     {
@@ -119,8 +121,35 @@ class PostModel extends Model
     /**
      * @return string
      */
-    public function getPicture()
+    public function getPicture(): string
     {
         return $this->picture;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSearchIndex(): string
+    {
+        return $this::ELASTIC_SEARCH_INDEX;
+    }
+
+    /**
+     * @return int
+     */
+    public function getKey(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return array
+     */
+    public function toSearchArray(): array
+    {
+        return [
+            'title' => $this->title,
+            'content' => $this->content
+        ];
     }
 }

@@ -1,11 +1,24 @@
 <?php
 namespace App\Core\Category;
 
+use App\Infrastructure\Persistence\ConditionBuilder\Condition;
+use App\Infrastructure\Persistence\ConditionBuilder\ConditionBuilder;
+use App\Infrastructure\Persistence\ConditionBuilder\ConditionBuilderInterface;
+use App\Infrastructure\Persistence\ConditionBuilder\Operators\OperatorEqual;
+use App\Infrastructure\Persistence\ConditionBuilder\Operators\OperatorLike;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilter;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
 
 class CategoryFilter extends RequestFilter implements RequestFilterInterface
 {
+    /** @var ConditionBuilderInterface $conditionBuilder */
+    private ConditionBuilderInterface $conditionBuilder;
+    
+    public function __construct()
+    {
+        $this->conditionBuilder = new ConditionBuilder();
+    }
+
     /**
      * @return string
      */
@@ -31,10 +44,6 @@ class CategoryFilter extends RequestFilter implements RequestFilterInterface
      */
     public function getShowInNav()
     {
-        if ($this->request->string('showInNav')->isEmpty()) {
-            return null;
-        }
-
         $value = $this->request->boolean('showInNav');
 
         return $value;
@@ -51,21 +60,15 @@ class CategoryFilter extends RequestFilter implements RequestFilterInterface
     /**
      * @inheritdoc
      */
-    public function getConditions(): array
+    public function getConditionBuilder(): ConditionBuilderInterface
     {
-        $conditions = [];
+        $this->conditionBuilder->setConditions([
+            new Condition('name', new OperatorLike(), $this->getName()),
+            new Condition('description', new OperatorLike(), $this->getDescription()),
+            new Condition('showInNav', new OperatorEqual(), $this->getShowInNav(), [true, false]),
+        ]);
 
-        if ($this->getName() !== '') {
-            $conditions[] = [ 'column' => 'name', 'condition' => 'like', 'value' => '%' . $this->getName() . '%' ];
-        }
-        if ($this->getDescription() !== '') {
-            $conditions[] = [ 'column' => 'description', 'condition' => 'like', 'value' => '%' . $this->getDescription() . '%' ];
-        }
-        if ($this->getShowInNav() !== null) {
-            $conditions[] = [ 'column' => 'showInNav', 'condition' => '=', 'value' => $this->getShowInNav() ];
-        }
-
-        return $conditions;
+        return $this->conditionBuilder;
     }
 
     /**

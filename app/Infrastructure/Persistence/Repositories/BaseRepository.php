@@ -1,10 +1,10 @@
 <?php
 namespace App\Infrastructure\Persistence\Repositories;
 
+use App\Infrastructure\Persistence\ConditionBuilder\ConditionBuilderInterface;
 use App\Infrastructure\Persistence\Pagination\PaginationResult;
 use App\Infrastructure\Persistence\Pagination\PaginationResultInterface;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
-use Illuminate\Database\Eloquent\Builder;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
@@ -53,11 +53,22 @@ abstract class BaseRepository implements BaseRepositoryInterface
         if ($filter->getTableRelated()) {
             $results = $results->with($filter->getTableRelated());
         }
-        foreach ($filter->getConditions() as $condition) {
+        // foreach ($filter->getConditions() as $condition) {
+        //     $results = $results->where(
+        //         $condition['column'],
+        //         $condition['condition'],
+        //         $condition['value']
+        //     );
+        // }
+
+        /** @var ConditionBuilderInterface $conditionBuilder */
+        $conditionBuilder = $filter->getConditionBuilder();
+        /** @var \App\Infrastructure\Persistence\ConditionBuilder\Condition $condition */
+        foreach ($conditionBuilder->getConditions() as $condition) {
             $results = $results->where(
-                $condition['column'],
-                $condition['condition'],
-                $condition['value']
+                $condition->getKey(),
+                $condition->getOperator(),
+                $condition->getValue()
             );
         }
 

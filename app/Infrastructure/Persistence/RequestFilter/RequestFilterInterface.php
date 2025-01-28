@@ -2,6 +2,7 @@
 namespace App\Infrastructure\Persistence\RequestFilter;
 
 use Illuminate\Http\Request;
+use App\Infrastructure\Persistence\ConditionBuilder\ConditionBuilderInterface;
 
 interface RequestFilterInterface
 {
@@ -11,9 +12,9 @@ interface RequestFilterInterface
     public function setRequest(Request $request);
 
     /**
-     * @return array
+     * @return ConditionBuilderInterface
      */
-    public function getConditions(): array;
+    public function getConditionBuilder(): ConditionBuilderInterface;
 
     /**
      * @return array

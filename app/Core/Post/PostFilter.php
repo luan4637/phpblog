@@ -1,12 +1,26 @@
 <?php
 namespace App\Core\Post;
 
+use App\Core\Post\Positions;
+use App\Infrastructure\Persistence\ConditionBuilder\Condition;
+use App\Infrastructure\Persistence\ConditionBuilder\ConditionBuilder;
+use App\Infrastructure\Persistence\ConditionBuilder\ConditionBuilderInterface;
+use App\Infrastructure\Persistence\ConditionBuilder\Operators\OperatorEqual;
+use App\Infrastructure\Persistence\ConditionBuilder\Operators\OperatorLike;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilter;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
 use Illuminate\Database\Eloquent\Builder;
 
 class PostFilter extends RequestFilter implements RequestFilterInterface
 {
+    /** @var ConditionBuilderInterface $conditionBuilder */
+    private ConditionBuilderInterface $conditionBuilder;
+    
+    public function __construct()
+    {
+        $this->conditionBuilder = new ConditionBuilder();
+    }
+
     /**
      * @return string
      */
@@ -28,12 +42,12 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
     }
 
     /**
-     * @return bool|null
+     * @return bool|string
      */
     public function getPublished()
     {
         if ($this->request->string('published')->isEmpty()) {
-            return null;
+            return '';
         }
 
         $value = $this->request->boolean('published');
@@ -42,14 +56,10 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getPosition()
     {
-        if ($this->request->string('position')->isEmpty()) {
-            return null;
-        }
-
         $value = $this->request->string('position');
 
         return $value;
@@ -80,27 +90,16 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
     /**
      * @inheritdoc
      */
-    public function getConditions(): array
+    public function getConditionBuilder(): ConditionBuilderInterface
     {
-        $conditions = [];
+        $this->conditionBuilder->setConditions([
+            new Condition('title', new OperatorLike(), $this->getTitle()),
+            new Condition('content', new OperatorLike(), $this->getContent()),
+            new Condition('published', new OperatorEqual(), $this->getPublished(), [true, false]),
+            new Condition('position', new OperatorEqual(), $this->getPosition(), Positions::getAll()),
+        ]);
 
-        if ($this->getTitle() !== '') {
-            $conditions[] = [ 'column' => 'title', 'condition' => 'like', 'value' => '%' . $this->getTitle() . '%' ];
-        }
-        if ($this->getContent() !== '') {
-            $conditions[] = [ 'column' => 'content', 'condition' => 'like', 'value' => '%' . $this->getContent() . '%' ];
-        }
-        if ($this->getPublished() !== null) {
-            $conditions[] = [ 'column' => 'published', 'condition' => '=', 'value' => $this->getPublished() ];
-        }
-        if ($this->getPosition() !== null) {
-            $conditions[] = [ 'column' => 'position', 'condition' => '=', 'value' => $this->getPosition() ];
-        }
-        if ($this->getCategory() !== null) {
-
-        }
-
-        return $conditions;
+        return $this->conditionBuilder;
     }
 
     /**
