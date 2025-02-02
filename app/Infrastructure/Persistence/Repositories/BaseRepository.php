@@ -53,13 +53,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
         if ($filter->getTableRelated()) {
             $results = $results->with($filter->getTableRelated());
         }
-        // foreach ($filter->getConditions() as $condition) {
-        //     $results = $results->where(
-        //         $condition['column'],
-        //         $condition['condition'],
-        //         $condition['value']
-        //     );
-        // }
 
         /** @var ConditionBuilderInterface $conditionBuilder */
         $conditionBuilder = $filter->getConditionBuilder();

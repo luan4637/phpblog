@@ -14,6 +14,9 @@ php artisan migrate
 ## create user admin
 php artisan db:seed
 
+## index elasticsearch
+php artisan search:reindex
+
 ## create aws s3 bucket
 php artisan aws:createbucket
 

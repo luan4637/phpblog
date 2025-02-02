@@ -23,10 +23,10 @@ export const usePostStore = defineStore('postStore', {
             }
 
             if (searchQuery !== undefined && searchQuery !== '') {
-                queryFilter += '&searchQuery=' + searchQuery;
+                queryFilter += '&q=' + searchQuery;
             }
 
-            let URL = API_URL + "/post?page=" + (page ?? this.page) + "&limit=" + (limit ?? this.limit) + queryFilter;
+            let URL = API_URL + "/post/search?page=" + (page ?? this.page) + "&limit=" + (limit ?? this.limit) + queryFilter;
             const _this = this;
             this.loading = true;
             BaseClient.get(URL).then(function(response) {

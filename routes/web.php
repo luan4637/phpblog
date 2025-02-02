@@ -21,6 +21,7 @@ Route::get('/logout', [LoginController::class, 'logout']);
 
 Route::get('/category', [CategoryController::class, 'index']);
 Route::get('/post', [PostController::class, 'index']);
+Route::get('/post/search', [PostController::class, 'search']);
 Route::get('/post/{id}', [PostController::class, 'get']);
 
 Route::middleware('auth:sanctum')->group(function () {

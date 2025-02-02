@@ -52,6 +52,20 @@ class PostController extends Controller
         $this->postFilter->setRequest($request);
 
         /** @var \App\Infrastructure\Persistence\Pagination\PaginationResultInterface */
+        $paginationResult = $this->postRepository->paginate($this->postFilter);
+
+        return $this->responseSuccess($paginationResult);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
+    {
+        $this->postFilter->setRequest($request);
+
+        /** @var \App\Infrastructure\Persistence\Pagination\PaginationResultInterface */
         $paginationResult = $this->postRepository->search($this->postFilter);
 
         return $this->responseSuccess($paginationResult);

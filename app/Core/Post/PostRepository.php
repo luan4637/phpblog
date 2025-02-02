@@ -4,6 +4,7 @@ namespace App\Core\Post;
 use App\Core\Post\PostFilter;
 use App\Infrastructure\Persistence\Repositories\BaseRepository;
 use App\Infrastructure\Persistence\Pagination\PaginationResultInterface;
+use App\Infrastructure\Persistence\Pagination\PaginationResult;
 use Elastic\Elasticsearch\Client as ElasticClient;
 
 class PostRepository extends BaseRepository implements PostRepositoryInterface
@@ -34,37 +35,36 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
      */
     public function search(PostFilter $filter): PaginationResultInterface
     {
-        // $params = [
-        //     'index' => PostModel::ELASTIC_SEARCH_INDEX,
-        //     'body'  => [
-        //         'from' => '0',
-        //         'size' => '3',
-        //         'query' => [
-        //             'multi_match' => [
-        //                 'query' => 'sollicitudin',
-        //                 'fields' => ['title', 'content']
-        //             ]
-        //             // 'bool' => [
-        //             //     'must' => [
-        //             //         [
-        //             //             'match' => [
-        //             //                 'title' => 'nam'
-        //             //             ],
-        //             //         ],
-        //             //         [
-        //             //             'match' => [
-        //             //                 'content' => 'at'
-        //             //             ],
-        //             //         ]
-        //             //     ]
-        //             // ],
-        //         ]
-        //     ]
-        // ];
+        $limit = $filter->getLimit();
+        $page = $filter->getPage() - 1;
+        $query = $filter->getQuery();
+
+        $params = [
+            'index' => PostModel::ELASTIC_SEARCH_INDEX,
+            'body'  => [
+                'from' => $limit * $page,
+                'size' => $limit,
+                'query' => [
+                    'multi_match' => [
+                        'query' => $query,
+                        'fields' => ['title', 'content']
+                    ]
+                ]
+            ]
+        ];
         
-        // $results = $this->elasticClient->search($params);
-        // var_dump($results->asArray());
-        
+        $results = $this->elasticClient->search($params);
+        $data = $results->asArray();
+        $total = $data['hits']['total']['value'];
+        $items = $data['hits']['hits'];
+
+        foreach ($items as &$item) {
+            $item = $item['_source'];
+        }
+        if ($total > 0) {
+            return new PaginationResult($items, $total);
+        }
+
         return $this->paginate($filter);
     }
 }

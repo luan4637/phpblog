@@ -24,6 +24,16 @@ class PostFilter extends RequestFilter implements RequestFilterInterface
     /**
      * @return string
      */
+    public function getQuery(): string
+    {
+        $value = $this->request->string('q')->trim();
+
+        return $value;
+    }
+
+    /**
+     * @return string
+     */
     public function getTitle(): string
     {
         $value = $this->request->string('title')->trim();

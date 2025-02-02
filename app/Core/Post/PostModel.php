@@ -148,8 +148,15 @@ class PostModel extends Model
     public function toSearchArray(): array
     {
         return [
+            'id' => $this->id,
             'title' => $this->title,
-            'content' => $this->content
+            'content' => $this->content,
+            'slug' => $this->slug,
+            'picture' => $this->picture,
+            'createdAt' => $this->createdAt,
+            'user' => [
+                'name' => $this->user->name
+            ]
         ];
     }
 }
