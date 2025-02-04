@@ -6,6 +6,7 @@ use App\Infrastructure\Persistence\Repositories\BaseRepository;
 use App\Infrastructure\Persistence\Pagination\PaginationResultInterface;
 use App\Infrastructure\Persistence\Pagination\PaginationResult;
 use Elastic\Elasticsearch\Client as ElasticClient;
+use Symfony\Component\HttpFoundation\Response;
 
 class PostRepository extends BaseRepository implements PostRepositoryInterface
 {
@@ -35,34 +36,59 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
      */
     public function search(PostFilter $filter): PaginationResultInterface
     {
+        /** @var int $limit */
         $limit = $filter->getLimit();
+        /** @var int $page */
         $page = $filter->getPage() - 1;
+        /** @var string $query */
         $query = $filter->getQuery();
 
-        $params = [
+        $checkIndexParams = [
             'index' => PostModel::ELASTIC_SEARCH_INDEX,
+            'id' => '*'
+        ];
+
+        $params = [
+            'index' => $checkIndexParams['index'],
             'body'  => [
                 'from' => $limit * $page,
                 'size' => $limit,
                 'query' => [
                     'multi_match' => [
                         'query' => $query,
-                        'fields' => ['title', 'content']
+                        'fields' => ['title', 'content'],
+                        'operator' => 'and',
+                        // 'type' => 'best_fields'
+                    ]
+                ],
+                'sort' => [
+                    'createdAt' => [
+                        'order' => 'desc',
+                        'format' => 'strict_date_optional_time_nanos'
                     ]
                 ]
             ]
         ];
-        
-        $results = $this->elasticClient->search($params);
-        $data = $results->asArray();
-        $total = $data['hits']['total']['value'];
-        $items = $data['hits']['hits'];
 
-        foreach ($items as &$item) {
-            $item = $item['_source'];
+        if (empty($query)) {
+            unset($params['body']['query']);
         }
-        if ($total > 0) {
-            return new PaginationResult($items, $total);
+
+        $elasticStatusCode = $this->elasticClient->exists($checkIndexParams)->getStatusCode();
+
+        if ($elasticStatusCode === Response::HTTP_OK) {
+            $results = $this->elasticClient->search($params);
+            $data = $results->asArray();
+            $total = $data['hits']['total']['value'];
+            $items = $data['hits']['hits'];
+
+            foreach ($items as &$item) {
+                $item = $item['_source'];
+            }
+
+            if ($total > 0) {
+                return new PaginationResult($items, $total);
+            }
         }
 
         return $this->paginate($filter);
