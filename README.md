@@ -1,30 +1,33 @@
+# ----------------- Description -----------------
+This is a project content management. Manage the articles and users. It use kafka to stream data from mysql to elasticsearch and notification via socketIO. Store the image files in AWS S3 (localstack environment).
+
+The project can lauch by docker and already include all configurations that need to execute.
+
+Admin panel: admin.phpblog.private
+login email: luan4637@gmail.com
+login password: admin
+
+login email: user@mail.com
+login password: admin
+
+# ----------------- Technical -----------------
+## Backend:
+PHP, Laravel, SocketIO, Redis, Elasticsearch,
+RabbitMQ, Kafka, Debezium, AWS S3
+## Database:
+MySql
+## Frontend:
+HTML, CSS, SASS, VueJS
+
 # ----------------- Docker compose install -----------------
 ## add host file
 127.0.0.1 phpblog.private
 127.0.0.1 admin.phpblog.private
 127.0.0.1 host.docker.internal
 
-## start server
+## start server and run settings automatically
 cd [ROOT]
 docker compose up
-
-## migrate database
-php artisan migrate
-
-## create user admin
-php artisan db:seed
-
-## index elasticsearch
-php artisan search:reindex
-
-## create aws s3 bucket
-php artisan aws:createbucket
-
-login email: luan4637@gmail.com
-login password: admin
-
-login email: user@mail.com
-login password: admin
 
 ## install client vuejs
 ### client side
