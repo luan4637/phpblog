@@ -74,23 +74,26 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             unset($params['body']['query']);
         }
 
-        $elasticStatusCode = $this->elasticClient->exists($checkIndexParams)->getStatusCode();
-
+        $elasticStatusCode = $this->elasticClient->indices()->exists($checkIndexParams)->getStatusCode();
+        
         if ($elasticStatusCode === Response::HTTP_OK) {
             $results = $this->elasticClient->search($params);
             $data = $results->asArray();
             $total = $data['hits']['total']['value'];
             $items = $data['hits']['hits'];
-
+            
             foreach ($items as &$item) {
                 $item = $item['_source'];
             }
 
             if ($total > 0) {
                 return new PaginationResult($items, $total);
+            } else {
+                return new PaginationResult([], 0);
             }
         }
 
-        return $this->paginate($filter);
+        return new PaginationResult([], 0);
+        // return $this->paginate($filter);
     }
 }

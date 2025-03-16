@@ -1,7 +1,11 @@
+FROM node:lts-alpine as node
 FROM php:8.3-alpine
 
 RUN apk update && \
     apk add --no-cache zip && \
+    apk add --no-cache unzip && \
+    apk add --no-cache wget && \
+    apk add --no-cache git && \
     apk add --no-cache curl && \
     apk add --no-cache curl-dev && \
     apk add --no-cache icu-dev && \
@@ -13,7 +17,9 @@ RUN apk update && \
         freetype-dev \
         libpng-dev \
         jpeg-dev \
-        libjpeg-turbo-dev
+        libjpeg-turbo-dev && \
+    apk add --no-cache librdkafka-dev && \
+    apk add --no-cache libstdc++ libgcc
 
 RUN docker-php-ext-install curl gd intl mbstring mysqli pdo pdo_mysql xml sockets
 
@@ -21,4 +27,17 @@ RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \
     && apk --no-cache add libmemcached-dev zlib-dev \
     && yes '' | pecl install memcached \
     && docker-php-ext-enable memcached \
+    && pecl install rdkafka \
+    && docker-php-ext-enable rdkafka \
     && apk del pcre-dev ${PHPIZE_DEPS}
+
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node /usr/local/include/node /usr/local/include/node
+COPY --from=node /usr/local/share/man/man1/node.1 /usr/local/share/man/man1/node.1
+COPY --from=node /usr/local/share/doc/node /usr/local/share/doc/node
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /opt/ /opt/
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+RUN ln -s /opt/yarn-$(ls /opt/ | grep yarn | sed 's/yarn-//')/bin/yarn /usr/local/bin/yarn
+RUN ln -s /opt/yarn-$(ls /opt/ | grep yarn | sed 's/yarn-//')/bin/yarnpkg /usr/local/bin/yarnpkg

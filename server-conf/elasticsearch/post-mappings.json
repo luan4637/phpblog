@@ -1,0 +1,40 @@
+{
+  "mappings": { 
+    "properties": { 
+      "id": { 
+        "type": "long" 
+      },
+      "title": { 
+        "type": "text"
+      },
+      "slug": { 
+        "type": "text"
+      },
+      "content": { 
+        "type": "text"
+      },
+      "userId": { 
+        "type": "integer" 
+      },
+      "published": { 
+        "type" : "short",
+        "null_value" : 1
+      },
+      "position": { 
+        "type": "text" 
+      },
+      "picture": { 
+        "type": "text" 
+      },
+      "createdAt": { 
+        "type": "date" 
+      },
+      "updatedAt": { 
+        "type": "date" 
+      },
+      "deletedAt": { 
+        "type": "date" 
+      }
+    }
+  }
+}

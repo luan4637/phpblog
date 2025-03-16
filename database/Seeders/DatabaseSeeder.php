@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
                 'roles' => [Roles::ROLE_GUEST]
             ]);
         } catch(\Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            // echo 'Error: ' . $e->getMessage();
+            echo 'Email guest@mail.com already exists';
         }
 
         try {
@@ -39,7 +40,8 @@ class DatabaseSeeder extends Seeder
                 'roles' => [Roles::ROLE_ADMIN, Roles::ROLE_USER]
             ]);
         } catch(\Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            // echo 'Error: ' . $e->getMessage();
+            echo 'Email luan4637@gmail.com already exists.\n';
         }
 
         try {
@@ -52,14 +54,19 @@ class DatabaseSeeder extends Seeder
                 'roles' => [Roles::ROLE_USER]
             ]);
         } catch(\Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            // echo 'Error: ' . $e->getMessage();
+            echo 'Email user@mail.com already exists.\n';
         }
 
         // import data sample
         $scriptPath = app_path() . '/../database/data_sample.sql';
         if (file_exists($scriptPath)) {
-            $dataSample = file_get_contents($scriptPath);
-            DB::unprepared($dataSample);
+            try {
+                $dataSample = file_get_contents($scriptPath);
+                DB::unprepared($dataSample);
+            } catch(\Exception $e) {
+                echo 'Data existed\n';
+            }
         }
     }
 }

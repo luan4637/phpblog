@@ -23,9 +23,6 @@ services:
     build:
       dockerfile: ./server-conf/dockerfile
       context: .
-    # ports:
-    #   - 9000:9000
-    #   - 9001:9001
     volumes:
       - ./:/usr/share
       - ./server-conf/php.ini:/usr/local/etc/php/php.ini
@@ -33,7 +30,6 @@ services:
     networks:
       - internal
   phpcmd:
-    # image: php:8.3-alpine
     container_name: phpcmd
     build:
       dockerfile: ./server-conf/dockerfilephpcmd
@@ -45,13 +41,46 @@ services:
       - sh
       - "-c"
       - |
+        sleep 5
+        sh /usr/share/setup.sh
+        sleep 5
+        echo ""
+        echo "Staring queue"
         cd /usr/share
-        sleep 10 && php artisan queue:work
+        php artisan queue:work
     depends_on:
+      mysql:
+        condition: service_healthy
+      debeziumconnect:
+        condition: service_started
       rabbitmq:
+        condition: service_started
+      localstack:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+      kafka:
         condition: service_started
     networks:
       - internal
+  # phpschedulecmd:
+  #   build:
+  #     dockerfile: ./server-conf/dockerfilephpcmd
+  #     context: .
+  #   volumes:
+  #     - ./:/usr/share
+  #     - ./server-conf/php.ini:/usr/local/etc/php/php.ini
+  #   command:
+  #     - sh
+  #     - "-c"
+  #     - |
+  #       cd /usr/share
+  #       sleep 10 && php artisan schedule:work
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_started
+  #   networks:
+  #     - internal
   mysql:
     image: mysql:8.0.39
     ports:
@@ -61,8 +90,10 @@ services:
       MYSQL_DATABASE: phpblog_db
       MYSQL_USER: phpblog_user
       MYSQL_PASSWORD: phpblog_password
-    # volumes:
-    #   - './mysqldata:/var/lib/mysql'
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
     networks:
       - internal
   redis-host:
@@ -71,6 +102,10 @@ services:
       - 6379:6379
     networks:
       - internal
+    deploy:
+      resources:
+        limits:
+          memory: 200MB
   memcached-host:
     image: memcached:latest
     ports:
@@ -81,6 +116,10 @@ services:
       - --threads=4
     networks:
       - internal
+    deploy:
+      resources:
+        limits:
+          memory: 200MB
   socketio:
     image: node:lts-alpine
     volumes:
@@ -111,9 +150,6 @@ services:
       - "127.0.0.1:4510-4559:4510-4559"
     environment:
       - DEBUG=${DEBUG:-0}
-    # volumes:
-    #   - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-    #   - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
       - internal
   elasticsearch:
@@ -126,6 +162,61 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 500MB
+  kafka:
+    image: apache/kafka:latest
+    hostname: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://host.docker.internal:29092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+    ports:
+      - 9092:9092
+      - 29092:29092
+      - 9093:9093
+    networks:
+      - internal
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:v0.7.2
+    environment:
+      DYNAMIC_CONFIG_ENABLED: true
+      KAFKA_CLUSTERS_0_NAME: wizard_test
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: host.docker.internal:29092
+    depends_on:
+      - kafka
+    ports:
+      - 8082:8080
+  debeziumconnect:
+    build:
+      dockerfile: ./server-conf/dockerfiledebezium
+      context: .
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+    depends_on:
+      - mysql
+      - elasticsearch
+      - kafka
+    ports:
+      - 8083:8083
     networks:
       - internal
 networks:

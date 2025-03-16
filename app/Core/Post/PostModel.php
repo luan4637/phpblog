@@ -150,13 +150,18 @@ class PostModel extends Model
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'content' => $this->content,
             'slug' => $this->slug,
+            'content' => $this->content,
+            'userId' => $this->userId,
+            'published' => $this->published,
+            'position' => $this->position,
             'picture' => $this->picture,
             'createdAt' => $this->createdAt,
-            'user' => [
-                'name' => $this->user->name
-            ]
+            'updatedAt' => $this->createdAt,
+            'deletedAt' => $this->createdAt,
+            // 'user' => [
+            //     'name' => $this->user->name
+            // ]
         ];
     }
 }

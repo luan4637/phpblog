@@ -1,0 +1,19 @@
+{
+  "name": "elastic-sink",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics": "dbserver1.phpblog_db.post",
+    "connection.url": "http://host.docker.internal:9200",
+    "transforms": "key,unwrap,dropPrefix",
+    "transforms.key.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.key.field": "id",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.dropPrefix.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.dropPrefix.regex": "dbserver1.phpblog_db.(.*)",
+    "transforms.dropPrefix.replacement": "$1model",
+    "flush.synchronously": "true",
+    "key.ignore": "false",
+    "type.name": "post"
+  }
+}
