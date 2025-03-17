@@ -33,6 +33,7 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::define('post-delete', [PostPolicy::class, 'delete']);
 
         Gate::define('user-pagination', [UserPolicy::class, 'pagination']);
+        Gate::define('user-notification', [UserPolicy::class, 'notification']);
         Gate::define('user-view', [UserPolicy::class, 'view']);
         Gate::define('user-create', [UserPolicy::class, 'create']);
         Gate::define('user-update', [UserPolicy::class, 'update']);

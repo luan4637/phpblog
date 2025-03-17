@@ -40,5 +40,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/save', [UserController::class, 'save'])->can('user-create', 'user-update');
 
     //notification
-    Route::get('/notification', [NotificationController::class, 'index'])->can('user-view');
+    Route::get('/notification', [NotificationController::class, 'index'])->can('user-notification');
 });

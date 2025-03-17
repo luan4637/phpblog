@@ -11,6 +11,12 @@ class UserPolicy
     {
         return in_array(Roles::ROLE_ADMIN, $user->roles);
     }
+
+    public function notification(UserModel $user): bool
+    {
+        return in_array(Roles::ROLE_ADMIN, $user->roles)
+                || in_array(Roles::ROLE_USER, $user->roles);
+    }
     
     public function view(UserModel $user): bool
     {

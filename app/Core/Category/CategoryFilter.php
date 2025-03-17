@@ -44,6 +44,10 @@ class CategoryFilter extends RequestFilter implements RequestFilterInterface
      */
     public function getShowInNav()
     {
+        if ($this->request->string('showInNav')->isEmpty()) {
+            return '';
+        }
+
         $value = $this->request->boolean('showInNav');
 
         return $value;
