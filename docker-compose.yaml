@@ -130,7 +130,7 @@ services:
       - sh
       - "-c"
       - |
-        cd /usr/share && npm start
+        cd /usr/share && npm install && npm start
     networks:
       - internal
   rabbitmq:
