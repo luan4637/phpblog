@@ -5,6 +5,7 @@ use App\Core\User\UserFilter;
 use App\Core\User\UserModel;
 use App\Core\User\UserRepositoryInterface;
 use App\Http\Requests\User\UserSaveRequest;
+use App\Infrastructure\Persistence\Pagination\PaginationResult;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,8 +34,13 @@ class NotificationController extends Controller
 
         if ($userId) {
             $user = $this->userRepository->find($userId);
-
-            return $this->responseSuccess($user->notifications);
+            $page = $request->get('page');
+            $limit = $request->get('limit');
+            $notifications = $user->notifications->skip(($page - 1) * $limit)->take($limit);
+            
+            return $this->responseSuccess(
+                new PaginationResult($notifications->toArray(), $user->notifications->count())
+            );
         }
 
         return $this->responseFail('Something went wrong');

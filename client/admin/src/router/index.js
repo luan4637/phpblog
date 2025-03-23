@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CategoryView from '../views/category/CategoryView.vue'
+import NotificationView from '../views/notification/NotificationView.vue'
 
 const router = createRouter({
     //history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,6 +56,11 @@ const router = createRouter({
             path: '/user/create',
             name: 'userCreate',
             component: () => import('../views/user/UserFormView.vue')
+        },
+        { //notifications management
+            path: '/notification',
+            name: 'notification',
+            component: NotificationView
         },
     ]
 })

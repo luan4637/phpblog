@@ -2,6 +2,7 @@
     import { mapState } from 'pinia';
     import { RouterLink } from 'vue-router';
     import { useUserStore } from '../../stores/UserStore';
+    import { useNotificationStore } from '../../stores/NotificationStore';
     import { usePostStore } from '../../stores/PostStore';
     import { useSocketStore } from '../../stores/SocketStore';
     import { formatDateMixin } from '@/mixins';
@@ -9,6 +10,7 @@
     export default {
         setup() {
             const userStore = useUserStore();
+            const notificationStore = useNotificationStore();
             const postStore = usePostStore();
             const socketStore = useSocketStore();
             const user = JSON.parse(localStorage.getItem('user') ?? '{}');
@@ -17,6 +19,7 @@
 
             return {
                 userStore,
+                notificationStore,
                 postStore,
                 socketStore,
                 user,
@@ -27,7 +30,7 @@
             RouterLink
         },
         computed: {
-            ...mapState(useUserStore, ['notifications']),
+            ...mapState(useNotificationStore, ['overlayNotifications', 'overlayNotificationsTotal']),
             ...mapState(useSocketStore, ['socket']),
         },
         methods: {
@@ -37,7 +40,7 @@
         },
         created() {
             this.userStore.bindNotifications(this.socket, this.user);
-            this.userStore.getNotifications();
+            this.notificationStore.getOverlayNotifications(1, 5);
             this.postStore.listenPostCreated(this.socket, this.user);
         }
     }
@@ -51,11 +54,14 @@
                 <ul class="header-btns" v-if="Object.keys(this.user).length">
                     <li>
                         <div class="notification-wrapper">
-                            <button class="btn-notification"><i class="fa fa-bell-o"></i><span id="notification_total">{{ notifications.length ?? 0 }}</span></button>
+                            <button class="btn-notification"><i class="fa fa-bell-o"></i><span id="notification_total">{{ overlayNotificationsTotal }}</span></button>
                             <ul id="notification_list" class="notification-list">
-                                <li v-for="notification in notifications">
+                                <li v-for="notification in overlayNotifications">
                                     <strong>{{ formatDate(notification.created_at) }}</strong>
-                                    <p>{{ notification.data.title }}</p>
+                                    <p>New post "{{ notification.data.title }}" by {{ notification.data.user.name }}</p>
+                                </li>
+                                <li>
+                                    <RouterLink :to="{ name: 'notification' }">View all notifications</RouterLink>
                                 </li>
                             </ul>
                         </div>
