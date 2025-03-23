@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { BaseClient } from './BaseClient';
 import router from "../router";
-import { io } from "socket.io-client";
 import { formatDateMixin } from '@/mixins'
 
 export const useUserStore = defineStore('userStore', {
@@ -96,20 +95,19 @@ export const useUserStore = defineStore('userStore', {
                 _this.notifications = response.data.data;
             });
         },
-        bindNotifications(user) {
-            var socket = io.connect('http://phpblog.private:3000', {});
+        bindNotifications(socket, user) {
             const userId = user.id;
 
             if (!userId) {
                 return;
             }
             
-            socket.on('private-App.Core.User.UserModel.' + userId, (data) => {
+            socket.on('private-App.Core.User.UserModel.' + userId, (response) => {
                 const node = document.createElement('li');
                 const nodeDate = document.createElement('strong');
                 const nodeText = document.createElement('p');
-                nodeDate.append(document.createTextNode(formatDateMixin.methods.formatDate(data.data.createdAt)));
-                nodeText.append(document.createTextNode(data.data.title));
+                nodeDate.append(document.createTextNode(formatDateMixin.methods.formatDate(response.data.createdAt)));
+                nodeText.append(document.createTextNode(response.data.title));
                 node.appendChild(nodeDate);
                 node.appendChild(nodeText);
                 document.getElementById('notification_list').appendChild(node);

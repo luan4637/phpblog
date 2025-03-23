@@ -1,11 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Core\Category\CategoryRepositoryInterface;
 use App\Core\Post\PostModel;
 use App\Core\Post\PostRepositoryInterface;
 use App\Core\User\UserModel;
 use App\Core\User\UserRepositoryInterface;
 use App\Events\MessagePushed;
+use App\Events\NewPost;
 use App\Jobs\ProcessPodcast;
 use App\Notifications\PostCreated;
 use ElephantIO\Client;
@@ -25,6 +27,8 @@ class TestController extends Controller
 
     private PostRepositoryInterface $postRepository;
 
+    private CategoryRepositoryInterface $categoryRepository;
+
     private ElasticClient $elasticsearch;
 
     /**
@@ -33,10 +37,12 @@ class TestController extends Controller
     public function __construct(
         UserRepositoryInterface $userRepository,
         PostRepositoryInterface $postRepository,
+        CategoryRepositoryInterface $categoryRepository,
         ElasticClient $elasticsearch
     ) {
         $this->userRepository = $userRepository;
         $this->postRepository = $postRepository;
+        $this->categoryRepository = $categoryRepository;
         $this->elasticsearch = $elasticsearch;
     }
 
@@ -57,17 +63,14 @@ class TestController extends Controller
 
 
         // ProcessPodcast::dispatch()->onQueue('default');
-        ProcessPodcast::dispatch();
+        // ProcessPodcast::dispatch();
         
 
         $users = $this->userRepository->getAll();
         $userAdmin = $this->userRepository->find(2);
         $message = 'notify message: ' . date('Y-m-d H:i:s');
-        $post = $this->postRepository->find(135);
+        $post = $this->postRepository->with(['categories', 'user'])->find(144);
         // $userAdmin->notify(new PostCreated($post));
-
-        // $user->notify(new PostCreated($message));
-        // Notification::send($users, new PostCreated($message));
 
         // $index = count($user->notifications);
         // foreach ($user->notifications as $notification) {
@@ -89,6 +92,9 @@ class TestController extends Controller
 
         // event(new MessagePushed($message));
 
+
+        NewPost::dispatch($post);
+        // $userAdmin->notify(new PostCreated($post));
 
 
         echo $message;

@@ -2,16 +2,24 @@
     import { mapState } from 'pinia';
     import { RouterLink } from 'vue-router';
     import { useUserStore } from '../../stores/UserStore';
+    import { usePostStore } from '../../stores/PostStore';
+    import { useSocketStore } from '../../stores/SocketStore';
     import { formatDateMixin } from '@/mixins';
 
     export default {
         setup() {
             const userStore = useUserStore();
+            const postStore = usePostStore();
+            const socketStore = useSocketStore();
             const user = JSON.parse(localStorage.getItem('user') ?? '{}');
+
+            socketStore.initSocket();
 
             return {
                 userStore,
-                user
+                postStore,
+                socketStore,
+                user,
             }
         },
         mixins: [ formatDateMixin ],
@@ -20,6 +28,7 @@
         },
         computed: {
             ...mapState(useUserStore, ['notifications']),
+            ...mapState(useSocketStore, ['socket']),
         },
         methods: {
             handleClickLogout() {
@@ -27,8 +36,9 @@
             }
         },
         created() {
-            this.userStore.bindNotifications(this.user);
+            this.userStore.bindNotifications(this.socket, this.user);
             this.userStore.getNotifications();
+            this.postStore.listenPostCreated(this.socket, this.user);
         }
     }
 </script>

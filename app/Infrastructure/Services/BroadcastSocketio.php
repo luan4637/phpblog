@@ -41,7 +41,12 @@ class BroadcastSocketio extends Broadcaster
 
         try {
             foreach($channels as $channel) {
-                $channelName = substr($channel->name, 0, strripos($channel->name, '.'));
+                $channelName = $channel->name;
+                
+                if (strripos($channelName, '.') > -1) {
+                    $channelName = substr($channelName, 0, strripos($channelName, '.'));
+                }
+                
                 $client->emit($channelName, $payload);
             }
         } catch (\Exception $e) {

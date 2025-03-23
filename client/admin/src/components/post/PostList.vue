@@ -90,7 +90,7 @@
             <RouterLink :to="{ name: 'postCreate' }" class="btn btn-primary">Create</RouterLink>
         </div>
         <div class="table-posts-inner">
-            <table class="table table-striped table-bordered">
+            <table class="table table-striped table-bordered" id="post_list">
                 <thead>
                     <tr>
                         <th>Picture</th>

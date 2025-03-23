@@ -5,6 +5,7 @@ use App\Core\Post\PostFilter;
 use App\Core\Post\PostModel;
 use App\Core\Post\PostRepositoryInterface;
 use App\Core\User\UserRepositoryInterface;
+use App\Events\NewPost;
 use App\Http\Requests\Post\PostSaveRequest;
 use App\Http\Requests\Post\PostDeleteRequest;
 use App\Infrastructure\Persistence\RequestFilter\RequestFilterInterface;
@@ -122,10 +123,16 @@ class PostController extends Controller
             $post->categories()->detach($post->categories);
             $post->categories()->attach($request->getCategories());
 
-            // if (!$id) {
+            if (!$id) {
+                /** @var UserModel[] $users */
                 $users = $this->userRepository->getAll();
+                /** @var UserModel|null $user */
+                $user = $this->userRepository->find($post->getUserId());
+                $post->user()->associate($user);
+
                 Notification::send($users, new PostCreated($post));
-            // }
+                NewPost::dispatch($post, $user);
+            }
             
             return $this->responseSuccess($post);
         }

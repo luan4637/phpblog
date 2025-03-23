@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { BaseClient } from './BaseClient';
 import router from "../router";
+import { formatDateMixin } from '@/mixins'
 
 export const usePostStore = defineStore('postStore', {
     state: () => ({
@@ -91,6 +92,57 @@ export const usePostStore = defineStore('postStore', {
             let URL = '/post/save';
             BaseClient.post(URL, formData).then(function(response) {
                 router.push({ name: 'home' })
+            });
+        },
+        listenPostCreated(socket, user) {
+            socket.on('presence-new-post', (response) => {
+                if (response.data.loggedUser.id == user.id) {
+                    return;
+                }
+
+                const ulNode = document.createElement('ul');
+                ulNode.classList.add('list-group');
+
+                for (var i = 0; i < response.data.postModel.categories.length; i++) {
+                    let category = response.data.postModel.categories[i];
+                    let liNode = document.createElement('li');
+                    liNode.classList.add('list-group-item');
+                    liNode.classList.add('lmb-1');
+                    liNode.append(document.createTextNode(category.name));
+                    ulNode.append(liNode);
+                }
+
+                const node = document.createElement('tr');
+                const nodePicture = document.createElement('td');
+                const nodeTitle = document.createElement('td');
+                const nodeCategories = document.createElement('td');
+                const nodePublished = document.createElement('td');
+                const nodePosition = document.createElement('td');
+                const nodeCreatedBy = document.createElement('td');
+                const nodeCreatedDate = document.createElement('td');
+                const nodeCreatedActions = document.createElement('td');
+
+                nodePicture.append(document.createTextNode(''));
+                nodeTitle.append(document.createTextNode(response.data.postModel.title));
+                nodeCategories.append(ulNode);
+                nodePublished.append(document.createTextNode(response.data.postModel.published.toString().toUpperCase()));
+                nodePosition.append(document.createTextNode(response.data.postModel.position));
+                nodeCreatedBy.append(document.createTextNode(response.data.postModel.user.name));
+                nodeCreatedDate.append(document.createTextNode(formatDateMixin.methods.formatDate(response.data.postModel.createdAt)));
+                nodeCreatedActions.append(document.createTextNode(''));
+
+                node.appendChild(nodePicture);
+                node.appendChild(nodeTitle);
+                node.appendChild(nodeCategories);
+                node.appendChild(nodePublished);
+                node.appendChild(nodePosition);
+                node.appendChild(nodeCreatedBy);
+                node.appendChild(nodeCreatedDate);
+                node.appendChild(nodeCreatedActions);
+
+                const tableBody = document.getElementById('post_list').getElementsByTagName('tbody')[0];
+                tableBody.insertBefore(node, tableBody.children[0]);
+                
             });
         },
     },

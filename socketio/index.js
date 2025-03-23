@@ -31,10 +31,18 @@ let numUsers = 0;
 
 io.on("connection", (socket) => {
     let addedUser = false;
+    let socketId = socket.id;
 
     socket.on('private-App.Core.User.UserModel', (data) => {
         socket.broadcast.emit('private-App.Core.User.UserModel.' + data.user_id, {
-            id: socket.id,
+            id: socketId,
+            data: data,
+        });
+    });
+
+    socket.on('presence-channel-name', (data) => {
+        socket.broadcast.emit('presence-new-post', {
+            id: socketId,
             data: data,
         });
     });
