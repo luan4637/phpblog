@@ -25,7 +25,6 @@ class NotificationController extends Controller
 
     /**
      * @param Request $request
-     * @param int $id
      */
     public function index(Request $request)
     {
@@ -41,6 +40,50 @@ class NotificationController extends Controller
             return $this->responseSuccess(
                 new PaginationResult($notifications->toArray(), $user->notifications->count())
             );
+        }
+
+        return $this->responseFail('Something went wrong');
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function unread(Request $request)
+    {
+        /** @var int $userId */
+        $userId = Auth::id();
+
+        if ($userId) {
+            $user = $this->userRepository->find($userId);
+            $notifications = $user->unreadNotifications;
+            
+            return $this->responseSuccess(
+                new PaginationResult($notifications->toArray(), $notifications->count())
+            );
+        }
+
+        return $this->responseFail('Something went wrong');
+    }
+
+    /**
+     * @param Request $request
+     * @param string $id
+     */
+    public function markAsRead(Request $request, string $id)
+    {
+        /** @var int $userId */
+        $userId = Auth::id();
+
+        if ($userId) {
+            $user = $this->userRepository->find($userId);
+            $notification = $user->unreadNotifications->find($id);
+            
+            if ($notification) {
+                $notification->update(['read_at' => now()]);
+                return $this->responseSuccess($notification);
+            } else {
+                return $this->responseFail('Item does not found');
+            }
         }
 
         return $this->responseFail('Something went wrong');

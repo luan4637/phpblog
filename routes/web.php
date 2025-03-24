@@ -41,4 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //notification
     Route::get('/notification', [NotificationController::class, 'index'])->can('user-notification');
+    Route::get('/notification/unread', [NotificationController::class, 'unread'])->can('user-notification');
+    Route::post('/notification/mark-as-read/{id}', [NotificationController::class, 'markAsRead'])->can('user-notification');
 });

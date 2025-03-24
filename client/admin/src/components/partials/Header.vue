@@ -30,7 +30,7 @@
             RouterLink
         },
         computed: {
-            ...mapState(useNotificationStore, ['overlayNotifications', 'overlayNotificationsTotal']),
+            ...mapState(useNotificationStore, ['unreadNotifications', 'unreadNotificationsTotal']),
             ...mapState(useSocketStore, ['socket']),
         },
         methods: {
@@ -40,7 +40,7 @@
         },
         created() {
             this.userStore.bindNotifications(this.socket, this.user);
-            this.notificationStore.getOverlayNotifications(1, 5);
+            this.notificationStore.getUnreadNotifications();
             this.postStore.listenPostCreated(this.socket, this.user);
         }
     }
@@ -54,14 +54,14 @@
                 <ul class="header-btns" v-if="Object.keys(this.user).length">
                     <li>
                         <div class="notification-wrapper">
-                            <button class="btn-notification"><i class="fa fa-bell-o"></i><span id="notification_total">{{ overlayNotificationsTotal }}</span></button>
+                            <button class="btn-notification"><i class="fa fa-bell-o"></i><span id="notification_total">{{ unreadNotificationsTotal }}</span></button>
                             <ul id="notification_list" class="notification-list">
-                                <li v-for="notification in overlayNotifications">
-                                    <strong>{{ formatDate(notification.created_at) }}</strong>
-                                    <p>New post "{{ notification.data.title }}" by {{ notification.data.user.name }}</p>
-                                </li>
                                 <li>
                                     <RouterLink :to="{ name: 'notification' }">View all notifications</RouterLink>
+                                </li>
+                                <li v-for="notification in unreadNotifications">
+                                    <strong>{{ formatDate(notification.created_at) }}</strong>
+                                    <p>New post "{{ notification.data.title }}" by {{ notification.data.user?.name }}</p>
                                 </li>
                             </ul>
                         </div>

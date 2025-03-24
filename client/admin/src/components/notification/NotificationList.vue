@@ -31,6 +31,14 @@
             },
             getNotifications(page, limit) {
                 this.notificationStore.getNotifications(page, limit);
+            },
+            onMarkAsRead(notificationId, event) {
+                this.notificationStore.markAsRead(notificationId);
+
+                const date = new Date();
+                const curDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes();
+                event.target.classList.add('hidden');
+                event.target.parentNode.parentNode.getElementsByClassName('js-read-at')[0].innerHTML = curDate;
             }
         },
         created() {
@@ -62,10 +70,13 @@
                         <td class="align-middle">{{ notification.type }}</td>
                         <td class="align-middle">{{ notification.notifiable_id }}</td>
                         <td class="align-middle">{{ notification.data }}</td>
-                        <td class="align-middle">{{ notification.read_at ? formatDate(notification.read_at) : '' }}</td>
+                        <td class="align-middle js-read-at">{{ notification.read_at ? formatDate(notification.read_at) : '' }}</td>
                         <td class="align-middle">{{ formatDate(notification.created_at) }}</td>
                         <td class="text-center">
-                            
+                            <button class="btn btn-primary text-nowrap"
+                                @click="onMarkAsRead(notification.id, $event)"
+                                v-if="!notification.read_at"
+                            >Mark as read</button>
                         </td>
                     </tr>
                 </tbody>

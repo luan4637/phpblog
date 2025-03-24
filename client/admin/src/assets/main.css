@@ -22,6 +22,9 @@ ul {
     width: 100%;
     max-width: 98em;
 }
+.hidden {
+    display: none;
+}
 
 .header {
     margin-bottom: 1em;
@@ -68,11 +71,13 @@ ul {
 .notification-list {
     display: none;
     position: absolute;
-    top: 2em;
+    top: 1.2em;
     right: 0;
     z-index: 99;
     padding: 0.5em 1em;
     width: 20em;
+    max-height: 30em;
+    overflow-y: auto;
     background-color: #eee;
 }
 .notification-wrapper:hover .notification-list {
